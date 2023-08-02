@@ -1,0 +1,6 @@
+{
+  "appTitle": "Awaku",
+  "@appTitle": {
+    "description": "The title of the application"
+  }
+}
