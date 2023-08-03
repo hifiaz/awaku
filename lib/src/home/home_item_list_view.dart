@@ -1,4 +1,5 @@
 import 'package:awaku/src/home/apple_watch.dart';
+import 'package:awaku/src/home/ble_page.dart';
 import 'package:flutter/material.dart';
 
 import '../settings/settings_view.dart';
@@ -114,7 +115,11 @@ class SampleItemListView extends StatelessWidget {
                 IconButton(
                     onPressed: () => Navigator.restorablePushNamed(
                         context, AppleWatch.routeName),
-                    icon: const Icon(Icons.add))
+                    icon: const Icon(Icons.add)),
+                IconButton(
+                    onPressed: () => Navigator.restorablePushNamed(
+                        context, FlutterFTMSApp.routeName),
+                    icon: const Icon(Icons.bluetooth))
               ],
             ),
           ),

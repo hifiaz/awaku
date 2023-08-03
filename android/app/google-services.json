@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "782366684829",
+    "project_id": "awaku-3794c",
+    "storage_bucket": "awaku-3794c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:782366684829:android:e85a854696df906ec58674",
+        "android_client_info": {
+          "package_name": "com.example.awaku"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "782366684829-u5lq57tpdbg0rub5dodd2vpt506f1r2r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCrEC1PxmNAjGb731aIYhSSKtDmvY5q2s0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "782366684829-u5lq57tpdbg0rub5dodd2vpt506f1r2r.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

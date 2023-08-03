@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>782366684829-0g2fik413ul5t0se5okf6kq8no415da4.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.782366684829-0g2fik413ul5t0se5okf6kq8no415da4</string>
+	<key>API_KEY</key>
+	<string>AIzaSyBtoerQONkcU1APtYG5HlS29dE-D2hyZGA</string>
+	<key>GCM_SENDER_ID</key>
+	<string>782366684829</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.devindo.awaku</string>
+	<key>PROJECT_ID</key>
+	<string>awaku-3794c</string>
+	<key>STORAGE_BUCKET</key>
+	<string>awaku-3794c.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:782366684829:ios:2220a0228a64f282c58674</string>
+</dict>
+</plist>
