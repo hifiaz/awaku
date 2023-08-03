@@ -283,7 +283,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: "4477e15def036a3b3afa4e33815e80cc6cc6284a"
+      resolved-ref: a3d7ff23c402065b4dab8eae2cb72c623abc5571
       url: "https://github.com/hifiaz/flutter_ftms.git"
     source: git
     version: "0.8.1"

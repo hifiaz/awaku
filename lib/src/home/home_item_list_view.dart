@@ -1,6 +1,7 @@
+import 'package:awaku/src/bike/bike_view.dart';
 import 'package:awaku/src/home/apple_watch.dart';
-import 'package:awaku/src/home/ble_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_ftms/flutter_ftms.dart';
 
 import '../settings/settings_view.dart';
 import 'home_item.dart';
@@ -116,12 +117,38 @@ class SampleItemListView extends StatelessWidget {
                     onPressed: () => Navigator.restorablePushNamed(
                         context, AppleWatch.routeName),
                     icon: const Icon(Icons.add)),
-                IconButton(
-                    onPressed: () => Navigator.restorablePushNamed(
-                        context, FlutterFTMSApp.routeName),
-                    icon: const Icon(Icons.bluetooth))
               ],
             ),
+          ),
+          FutureBuilder(
+            future: FTMS.listDevices(),
+            builder: (c, snapshot) {
+              if (snapshot.hasData) {
+                return ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: snapshot.data?.length ?? 0,
+                  itemBuilder: (c, index) {
+                    BluetoothDevice b = snapshot.data![index];
+                    return FutureBuilder<bool>(
+                      future: FTMS.isBluetoothDeviceFTMSDevice(b),
+                      builder: (context, snapshot) => (snapshot.data ?? false)
+                          ? ListTile(
+                              title: Text(b.localName),
+                              trailing: const Icon(Icons.arrow_right),
+                              onTap: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => BikeView(ftmsDevice: b),
+                                ),
+                              ),
+                            )
+                          : const SizedBox(),
+                    );
+                  },
+                );
+              }
+              return const SizedBox();
+            },
           ),
           ListTile(
             title: const Text('History'),

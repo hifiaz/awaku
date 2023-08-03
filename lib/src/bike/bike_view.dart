@@ -1,74 +1,17 @@
-import 'package:awaku/src/home/bloc.dart';
-import 'package:awaku/src/home/widgets.dart';
+import 'package:awaku/service/ftms_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ftms/flutter_ftms.dart';
 
-class FlutterFTMSApp extends StatefulWidget {
-  const FlutterFTMSApp({super.key});
-  static const routeName = '/ble_page';
-
-  @override
-  State<FlutterFTMSApp> createState() => _FlutterFTMSAppState();
-}
-
-class _FlutterFTMSAppState extends State<FlutterFTMSApp> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("flutter_ftms example"),
-      ),
-      body: const ScanPage(),
-    );
-  }
-}
-
-class ScanPage extends StatefulWidget {
-  const ScanPage({super.key});
-
-  @override
-  State<ScanPage> createState() => _ScanPageState();
-}
-
-class _ScanPageState extends State<ScanPage> {
-  @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Center(
-            child: StreamBuilder<bool>(
-              stream: FTMS.isScanning,
-              builder: (c, snapshot) =>
-                  scanBluetoothButton(snapshot.data ?? false),
-            ),
-          ),
-          StreamBuilder<List<ScanResult>>(
-            stream: FTMS.scanResults,
-            initialData: const [],
-            builder: (c, snapshot) => scanResultsToWidget(
-                (snapshot.data ?? [])
-                    .where((element) => element.device.localName.isNotEmpty)
-                    .toList(),
-                context),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class FTMSPage extends StatefulWidget {
+class BikeView extends StatefulWidget {
   final BluetoothDevice ftmsDevice;
 
-  const FTMSPage({Key? key, required this.ftmsDevice}) : super(key: key);
+  const BikeView({Key? key, required this.ftmsDevice}) : super(key: key);
 
   @override
-  State<FTMSPage> createState() => _FTMSPageState();
+  State<BikeView> createState() => _BikeViewState();
 }
 
-class _FTMSPageState extends State<FTMSPage> {
+class _BikeViewState extends State<BikeView> {
   void writeCommand(MachineControlPointOpcodeType opcodeType) async {
     MachineControlPoint? controlPoint;
     switch (opcodeType) {
@@ -116,9 +59,7 @@ class _FTMSPageState extends State<FTMSPage> {
       length: 3,
       child: Scaffold(
         appBar: AppBar(
-          title: Text(
-              '${widget.ftmsDevice.localName} (sd)'),
-              // '${widget.ftmsDevice.localName} (${FTMS.getDeviceDataTypeWithoutConnecting(widget.ftmsDevice)})'),
+          title: Text(widget.ftmsDevice.localName),
           bottom: const TabBar(
             tabs: <Widget>[
               Tab(
@@ -140,7 +81,7 @@ class _FTMSPageState extends State<FTMSPage> {
           children: <Widget>[
             SingleChildScrollView(
               child: StreamBuilder<DeviceData?>(
-                stream: ftmsBloc.ftmsDeviceDataControllerStream,
+                stream: ftmsService.ftmsDeviceDataControllerStream,
                 builder: (c, snapshot) {
                   if (!snapshot.hasData) {
                     return Column(
@@ -150,7 +91,8 @@ class _FTMSPageState extends State<FTMSPage> {
                           onPressed: () async {
                             await FTMS.useDeviceDataCharacteristic(
                                 widget.ftmsDevice, (DeviceData data) {
-                              ftmsBloc.ftmsDeviceDataControllerSink.add(data);
+                              ftmsService.ftmsDeviceDataControllerSink
+                                  .add(data);
                             });
                           },
                           child: const Text("use FTMS"),
@@ -162,9 +104,9 @@ class _FTMSPageState extends State<FTMSPage> {
                     padding: const EdgeInsets.all(8),
                     child: Column(
                       children: [
-                        Text( 'test',
-                          // FTMS.convertDeviceDataTypeToString(
-                          //     snapshot.data!.deviceDataType),
+                        Text(
+                          FTMS.convertDeviceDataTypeToString(
+                              snapshot.data!.deviceDataType),
                           textScaleFactor: 4,
                           style:
                               TextStyle(color: Theme.of(context).primaryColor),
@@ -187,7 +129,7 @@ class _FTMSPageState extends State<FTMSPage> {
             ),
             SingleChildScrollView(
               child: StreamBuilder<DeviceData?>(
-                stream: ftmsBloc.ftmsDeviceDataControllerStream,
+                stream: ftmsService.ftmsDeviceDataControllerStream,
                 builder: (c, snapshot) {
                   if (!snapshot.hasData) {
                     return Column(
@@ -197,7 +139,8 @@ class _FTMSPageState extends State<FTMSPage> {
                           onPressed: () async {
                             await FTMS.useDeviceDataCharacteristic(
                                 widget.ftmsDevice, (DeviceData data) {
-                              ftmsBloc.ftmsDeviceDataControllerSink.add(data);
+                              ftmsService.ftmsDeviceDataControllerSink
+                                  .add(data);
                             });
                           },
                           child: const Text("use FTMS"),
@@ -273,7 +216,7 @@ class _MachineFeatureWidgetState extends State<MachineFeatureWidget> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream: ftmsBloc.ftmsMachineFeaturesControllerStream,
+      stream: ftmsService.ftmsMachineFeaturesControllerStream,
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return Column(
@@ -283,7 +226,7 @@ class _MachineFeatureWidgetState extends State<MachineFeatureWidget> {
                   onPressed: () async {
                     MachineFeature? machineFeature = await FTMS
                         .readMachineFeatureCharacteristic(widget.ftmsDevice);
-                    ftmsBloc.ftmsMachineFeaturesControllerSink
+                    ftmsService.ftmsMachineFeaturesControllerSink
                         .add(machineFeature);
                   },
                   child: const Text("get Machine Features")),

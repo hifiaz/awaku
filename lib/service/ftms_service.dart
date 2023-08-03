@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_ftms/flutter_ftms.dart';
 
-class FTMSBloc {
+class FTMSService {
   final StreamController<DeviceData?> _ftmsDeviceDataController =
       StreamController<DeviceData?>.broadcast();
 
@@ -20,4 +20,4 @@ class FTMSBloc {
       _ftmsMachineFeaturesController.stream;
 }
 
-final FTMSBloc ftmsBloc = FTMSBloc();
+final FTMSService ftmsService = FTMSService();

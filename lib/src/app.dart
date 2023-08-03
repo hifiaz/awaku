@@ -1,5 +1,5 @@
 import 'package:awaku/src/home/apple_watch.dart';
-import 'package:awaku/src/home/ble_page.dart';
+import 'package:awaku/src/settings/device/add_device_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -75,8 +75,8 @@ class MyApp extends StatelessWidget {
                     return const SampleItemDetailsView();
                   case AppleWatch.routeName:
                     return const AppleWatch();
-                  case FlutterFTMSApp.routeName:
-                    return const FlutterFTMSApp();
+                  case AddDeviceView.routeName:
+                    return const AddDeviceView();
                   case SampleItemListView.routeName:
                   default:
                     return const SampleItemListView();
