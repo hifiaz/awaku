@@ -1,5 +1,7 @@
 import 'package:awaku/service/ftms_service.dart';
+import 'package:chart_sparkline/chart_sparkline.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_ftms/flutter_ftms.dart';
 
 class BikeView extends StatefulWidget {
@@ -12,237 +14,121 @@ class BikeView extends StatefulWidget {
 }
 
 class _BikeViewState extends State<BikeView> {
-  void writeCommand(MachineControlPointOpcodeType opcodeType) async {
-    MachineControlPoint? controlPoint;
-    switch (opcodeType) {
-      case MachineControlPointOpcodeType.requestControl:
-        controlPoint = MachineControlPoint.requestControl();
-        break;
-      case MachineControlPointOpcodeType.reset:
-        controlPoint = MachineControlPoint.reset();
-        break;
-      case MachineControlPointOpcodeType.setTargetSpeed:
-        controlPoint = MachineControlPoint.setTargetSpeed(speed: 12);
-        break;
-      case MachineControlPointOpcodeType.setTargetInclination:
-        controlPoint =
-            MachineControlPoint.setTargetInclination(inclination: 23);
-        break;
-      case MachineControlPointOpcodeType.setTargetResistanceLevel:
-        controlPoint =
-            MachineControlPoint.setTargetResistanceLevel(resistanceLevel: 3);
-        break;
-      case MachineControlPointOpcodeType.setTargetPower:
-        controlPoint = MachineControlPoint.setTargetPower(power: 34);
-        break;
-      case MachineControlPointOpcodeType.setTargetHeartRate:
-        controlPoint = MachineControlPoint.setTargetHeartRate(heartRate: 45);
-        break;
-      case MachineControlPointOpcodeType.startOrResume:
-        controlPoint = MachineControlPoint.startOrResume();
-        break;
-      case MachineControlPointOpcodeType.stopOrPause:
-        controlPoint = MachineControlPoint.stopOrPause(pause: true);
-        break;
-      default:
-        throw 'MachineControlPointOpcodeType $opcodeType is not implemented in this example';
-    }
+  List<double> data = [0.0];
+  @override
+  void initState() {
+    super.initState();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeRight,
+      DeviceOrientation.landscapeLeft,
+    ]);
+  }
 
-    await FTMS.writeMachineControlPointCharacteristic(
-        widget.ftmsDevice, controlPoint);
+  @override
+  dispose() {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeRight,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      initialIndex: 1,
-      length: 3,
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(widget.ftmsDevice.localName),
-          bottom: const TabBar(
-            tabs: <Widget>[
-              Tab(
-                text: 'Data',
-                icon: Icon(Icons.data_object),
-              ),
-              Tab(
-                text: 'Device Data Features',
-                icon: Icon(Icons.featured_play_list_outlined),
-              ),
-              Tab(
-                text: 'Machine Features',
-                icon: Icon(Icons.settings),
-              ),
-            ],
-          ),
-        ),
-        body: TabBarView(
-          children: <Widget>[
-            SingleChildScrollView(
-              child: StreamBuilder<DeviceData?>(
-                stream: ftmsService.ftmsDeviceDataControllerStream,
-                builder: (c, snapshot) {
-                  if (!snapshot.hasData) {
-                    return Column(
-                      children: [
-                        const Center(child: Text("No FTMSData found!")),
-                        ElevatedButton(
-                          onPressed: () async {
-                            await FTMS.useDeviceDataCharacteristic(
-                                widget.ftmsDevice, (DeviceData data) {
-                              ftmsService.ftmsDeviceDataControllerSink
-                                  .add(data);
-                            });
-                          },
-                          child: const Text("use FTMS"),
-                        ),
-                      ],
-                    );
-                  }
-                  return Padding(
-                    padding: const EdgeInsets.all(8),
-                    child: Column(
-                      children: [
-                        Text(
-                          FTMS.convertDeviceDataTypeToString(
-                              snapshot.data!.deviceDataType),
-                          textScaleFactor: 4,
-                          style:
-                              TextStyle(color: Theme.of(context).primaryColor),
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: snapshot.data!
-                              .getDeviceDataParameterValues()
-                              .map((parameterValue) => Text(
-                                    parameterValue.toString(),
-                                    textScaleFactor: 2,
-                                  ))
-                              .toList(),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              ),
-            ),
-            SingleChildScrollView(
-              child: StreamBuilder<DeviceData?>(
-                stream: ftmsService.ftmsDeviceDataControllerStream,
-                builder: (c, snapshot) {
-                  if (!snapshot.hasData) {
-                    return Column(
-                      children: [
-                        const Center(child: Text("No FTMSData found!")),
-                        ElevatedButton(
-                          onPressed: () async {
-                            await FTMS.useDeviceDataCharacteristic(
-                                widget.ftmsDevice, (DeviceData data) {
-                              ftmsService.ftmsDeviceDataControllerSink
-                                  .add(data);
-                            });
-                          },
-                          child: const Text("use FTMS"),
-                        ),
-                      ],
-                    );
-                  }
-
-                  return Column(
+    return Scaffold(
+      appBar: AppBar(),
+      body: StreamBuilder<DeviceData?>(
+        stream: ftmsService.ftmsDeviceDataControllerStream,
+        builder: (c, snapshot) {
+          if (!snapshot.hasData) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Center(child: Text("No FTMSData found!")),
+                ElevatedButton(
+                  onPressed: () async {
+                    await FTMS.useDeviceDataCharacteristic(widget.ftmsDevice,
+                        (DeviceData data) {
+                      ftmsService.ftmsDeviceDataControllerSink.add(data);
+                    });
+                  },
+                  child: const Text("Start"),
+                ),
+              ],
+            );
+          }
+          final power = snapshot.data!
+              .getDeviceDataParameterValues()
+              .firstWhere(
+                  (element) => element.flag?.name == 'Instantaneous Power');
+          final speed = snapshot.data!
+              .getDeviceDataParameterValues()
+              .firstWhere((element) => element.flag?.name == 'More Data');
+          final instan = snapshot.data!
+              .getDeviceDataParameterValues()
+              .firstWhere(
+                  (element) => element.flag?.name == 'Instantaneous Cadence');
+          final time = snapshot.data!
+              .getDeviceDataParameterValues()
+              .firstWhere((element) => element.flag?.name == 'Elapsed Time');
+          final distance = snapshot.data!
+              .getDeviceDataParameterValues()
+              .firstWhere((element) => element.flag?.name == 'Total Distance');
+          data.add(power.value.toDouble());
+          return Padding(
+            padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
+            child: Column(
+              children: [
+                Expanded(
+                  child: Stack(
                     children: [
-                      Text(
-                        "Device Data Features",
-                        textScaleFactor: 3,
-                        style: TextStyle(color: Theme.of(context).primaryColor),
+                      Sparkline(data: data),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Text('${(instan.value / 60).toStringAsFixed(2)} ${instan.unit}'),
+                          const SizedBox(width: 10),
+                          Text('${time.value} ${time.unit}'),
+                          const SizedBox(width: 10),
+                          Text('${distance.value} ${distance.unit}'),
+                          const SizedBox(width: 10),
+                          Text('${speed.value / 100} ${speed.unit}'),
+                        ],
                       ),
-                      Column(
-                        children: snapshot.data!
-                            .getDeviceDataFeatures()
-                            .entries
-                            .toList()
-                            .map((entry) =>
-                                Text('${entry.key.name}: ${entry.value}'))
-                            .toList(),
+                      Align(
+                        alignment: Alignment.center,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              '${power.value}',
+                              textScaleFactor: 4,
+                              style:
+                                  TextStyle(color: Theme.of(context).primaryColor),
+                            ),
+                           const Text('Power')
+                          ],
+                        ),
                       ),
                     ],
-                  );
-                },
-              ),
-            ),
-            Column(
-              children: [
-                MachineFeatureWidget(ftmsDevice: widget.ftmsDevice),
-                const Divider(
-                  height: 2,
-                ),
-                SizedBox(
-                  height: 60,
-                  child: ListView(
-                    scrollDirection: Axis.horizontal,
-                    children: MachineControlPointOpcodeType.values
-                        .map(
-                          (MachineControlPointOpcodeType opcodeType) => Padding(
-                            padding: const EdgeInsets.all(4),
-                            child: OutlinedButton(
-                              onPressed: () => writeCommand(opcodeType),
-                              child: Text(opcodeType.name),
-                            ),
-                          ),
-                        )
-                        .toList(),
                   ),
-                )
+                ),
+                Center(
+                  child: Text(
+                    FTMS.convertDeviceDataTypeToString(
+                        snapshot.data!.deviceDataType),
+                    textScaleFactor: 2,
+                    style: TextStyle(color: Theme.of(context).primaryColor),
+                  ),
+                ),
               ],
-            )
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class MachineFeatureWidget extends StatefulWidget {
-  final BluetoothDevice ftmsDevice;
-
-  const MachineFeatureWidget({Key? key, required this.ftmsDevice})
-      : super(key: key);
-
-  @override
-  State<MachineFeatureWidget> createState() => _MachineFeatureWidgetState();
-}
-
-class _MachineFeatureWidgetState extends State<MachineFeatureWidget> {
-  @override
-  Widget build(BuildContext context) {
-    return StreamBuilder(
-      stream: ftmsService.ftmsMachineFeaturesControllerStream,
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) {
-          return Column(
-            children: [
-              const Text("No Machine Features found!"),
-              ElevatedButton(
-                  onPressed: () async {
-                    MachineFeature? machineFeature = await FTMS
-                        .readMachineFeatureCharacteristic(widget.ftmsDevice);
-                    ftmsService.ftmsMachineFeaturesControllerSink
-                        .add(machineFeature);
-                  },
-                  child: const Text("get Machine Features")),
-            ],
+            ),
           );
-        }
-        return Column(
-          children: snapshot.data!
-              .getFeatureFlags()
-              .entries
-              .toList()
-              .where((element) => element.value)
-              .map((entry) => Text('${entry.key.name}: ${entry.value}'))
-              .toList(),
-        );
-      },
+        },
+      ),
     );
   }
 }

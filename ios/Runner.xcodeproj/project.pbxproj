@@ -81,6 +81,9 @@
 		7AFA3C8E1D35360C0083082E /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Release.xcconfig; path = Flutter/Release.xcconfig; sourceTree = "<group>"; };
 		85C8E860411E5A3DBCDF8AC5 /* Pods-Runner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"; sourceTree = "<group>"; };
 		87CC73799CEED744C3DE2E3F /* Pods_RunnerTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RunnerTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		881D1D472A7BD1B900B1C55F /* awaku Watch AppRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "awaku Watch AppRelease.entitlements"; sourceTree = "<group>"; };
+		882FA4AF2A7BD6D7006CB90B /* awaku Watch App.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "awaku Watch App.entitlements"; sourceTree = "<group>"; };
+		882FA4B02A7C6963006CB90B /* awaku-Watch-App-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "awaku-Watch-App-Info.plist"; sourceTree = SOURCE_ROOT; };
 		886453412A7AA06400EBA45B /* Runner.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Runner.entitlements; sourceTree = "<group>"; };
 		888B73AF2A7B1A3100A789F2 /* Awaku.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Awaku.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		888B73B12A7B1A3100A789F2 /* awakuApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = awakuApp.swift; sourceTree = "<group>"; };
@@ -151,6 +154,9 @@
 		888B73B02A7B1A3100A789F2 /* awaku Watch App */ = {
 			isa = PBXGroup;
 			children = (
+				882FA4B02A7C6963006CB90B /* awaku-Watch-App-Info.plist */,
+				882FA4AF2A7BD6D7006CB90B /* awaku Watch App.entitlements */,
+				881D1D472A7BD1B900B1C55F /* awaku Watch AppRelease.entitlements */,
 				888B73B12A7B1A3100A789F2 /* awakuApp.swift */,
 				888B73B32A7B1A3100A789F2 /* ContentView.swift */,
 				888B73B52A7B1A3300A789F2 /* Assets.xcassets */,
@@ -664,6 +670,7 @@
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = "awaku Watch App/awaku Watch App.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -672,6 +679,9 @@
 				ENABLE_PREVIEWS = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "awaku-Watch-App-Info.plist";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "We will sync your data with the Apple Health app to give you insights<";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "We will sync your data with the Apple Health app to give you better insights";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.devindo.awaku;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -706,6 +716,7 @@
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = "awaku Watch App/awaku Watch AppRelease.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -714,6 +725,9 @@
 				ENABLE_PREVIEWS = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "awaku-Watch-App-Info.plist";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "We will sync your data with the Apple Health app to give you insights<";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "We will sync your data with the Apple Health app to give you better insights";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.devindo.awaku;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -745,6 +759,7 @@
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = "awaku Watch App/awaku Watch App.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -753,6 +768,9 @@
 				ENABLE_PREVIEWS = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "awaku-Watch-App-Info.plist";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "We will sync your data with the Apple Health app to give you insights<";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "We will sync your data with the Apple Health app to give you better insights";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.devindo.awaku;
 				LD_RUNPATH_SEARCH_PATHS = (

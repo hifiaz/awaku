@@ -2,14 +2,14 @@ import 'package:awaku/src/bike/bike_view.dart';
 import 'package:awaku/src/home/apple_watch.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ftms/flutter_ftms.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../settings/settings_view.dart';
 import 'home_item.dart';
 import 'home_item_details_view.dart';
 
-/// Displays a list of SampleItems.
-class SampleItemListView extends StatelessWidget {
-  const SampleItemListView({
+class HomeItemListView extends ConsumerWidget {
+  const HomeItemListView({
     super.key,
     this.items = const [SampleItem(1), SampleItem(2), SampleItem(3)],
   });
@@ -19,7 +19,7 @@ class SampleItemListView extends StatelessWidget {
   final List<SampleItem> items;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Hello'),
@@ -49,144 +49,146 @@ class SampleItemListView extends StatelessWidget {
       // In contrast to the default ListView constructor, which requires
       // building all Widgets up front, the ListView.builder constructor lazily
       // builds Widgets as they’re scrolled into view.
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    Text(
-                      '75',
-                      style: Theme.of(context).textTheme.displayMedium,
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Icon(Icons.favorite,
-                            size: 20, color: Colors.pink),
-                        Text(
-                          'BPM',
-                          style: Theme.of(context).textTheme.bodySmall,
-                        )
-                      ],
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    Text(
-                      '56',
-                      style: Theme.of(context).textTheme.displayMedium,
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Icon(Icons.monitor_weight_outlined,
-                            size: 20, color: Colors.green),
-                        Text(
-                          'KG',
-                          style: Theme.of(context).textTheme.bodySmall,
-                        )
-                      ],
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    Text(
-                      '20',
-                      style: Theme.of(context).textTheme.displayMedium,
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Icon(Icons.arrow_outward,
-                            size: 20, color: Colors.purple),
-                        Text(
-                          'BMI',
-                          style: Theme.of(context).textTheme.bodySmall,
-                        )
-                      ],
-                    ),
-                  ],
-                ),
-                IconButton(
-                    onPressed: () => Navigator.restorablePushNamed(
-                        context, AppleWatch.routeName),
-                    icon: const Icon(Icons.add)),
-              ],
-            ),
-          ),
-          FutureBuilder(
-            future: FTMS.listDevices(),
-            builder: (c, snapshot) {
-              if (snapshot.hasData) {
-                return ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: snapshot.data?.length ?? 0,
-                  itemBuilder: (c, index) {
-                    BluetoothDevice b = snapshot.data![index];
-                    return FutureBuilder<bool>(
-                      future: FTMS.isBluetoothDeviceFTMSDevice(b),
-                      builder: (context, snapshot) => (snapshot.data ?? false)
-                          ? ListTile(
-                              title: Text(b.localName),
-                              trailing: const Icon(Icons.arrow_right),
-                              onTap: () => Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => BikeView(ftmsDevice: b),
-                                ),
-                              ),
-                            )
-                          : const SizedBox(),
-                    );
-                  },
-                );
-              }
-              return const SizedBox();
-            },
-          ),
-          ListTile(
-            title: const Text('History'),
-            trailing: TextButton(
-              onPressed: () {},
-              child: const Text('See All'),
-            ),
-          ),
-          ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            // Providing a restorationId allows the ListView to restore the
-            // scroll position when a user leaves and returns to the app after it
-            // has been killed while running in the background.
-            restorationId: 'sampleItemListView',
-            itemCount: items.length,
-            itemBuilder: (BuildContext context, int index) {
-              final item = items[index];
-
-              return ListTile(
-                  title: Text('SampleItem ${item.id}'),
-                  leading: const CircleAvatar(
-                    // Display the Flutter Logo image asset.
-                    foregroundImage:
-                        AssetImage('assets/images/flutter_logo.png'),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        '75',
+                        style: Theme.of(context).textTheme.displayMedium,
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Icon(Icons.favorite,
+                              size: 20, color: Colors.pink),
+                          Text(
+                            'BPM',
+                            style: Theme.of(context).textTheme.bodySmall,
+                          )
+                        ],
+                      ),
+                    ],
                   ),
-                  onTap: () {
-                    // Navigate to the details page. If the user leaves and returns to
-                    // the app after it has been killed while running in the
-                    // background, the navigation stack is restored.
-                    Navigator.restorablePushNamed(
-                      context,
-                      SampleItemDetailsView.routeName,
-                    );
-                  });
-            },
-          ),
-        ],
+                  Row(
+                    children: [
+                      Text(
+                        '56',
+                        style: Theme.of(context).textTheme.displayMedium,
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Icon(Icons.monitor_weight_outlined,
+                              size: 20, color: Colors.green),
+                          Text(
+                            'KG',
+                            style: Theme.of(context).textTheme.bodySmall,
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Text(
+                        '20',
+                        style: Theme.of(context).textTheme.displayMedium,
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Icon(Icons.arrow_outward,
+                              size: 20, color: Colors.purple),
+                          Text(
+                            'BMI',
+                            style: Theme.of(context).textTheme.bodySmall,
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
+                  IconButton(
+                      onPressed: () => Navigator.restorablePushNamed(
+                          context, AppleWatch.routeName),
+                      icon: const Icon(Icons.add)),
+                ],
+              ),
+            ),
+            FutureBuilder(
+              future: FTMS.listDevices(),
+              builder: (c, snapshot) {
+                if (snapshot.hasData) {
+                  return ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: snapshot.data?.length ?? 0,
+                    itemBuilder: (c, index) {
+                      BluetoothDevice b = snapshot.data![index];
+                      return FutureBuilder<bool>(
+                        future: FTMS.isBluetoothDeviceFTMSDevice(b),
+                        builder: (context, snapshot) => (snapshot.data ?? false)
+                            ? ListTile(
+                                title: Text(b.localName),
+                                trailing: const Icon(Icons.arrow_right),
+                                onTap: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => BikeView(ftmsDevice: b),
+                                  ),
+                                ),
+                              )
+                            : const SizedBox(),
+                      );
+                    },
+                  );
+                }
+                return const SizedBox();
+              },
+            ),
+            ListTile(
+              title: const Text('History'),
+              trailing: TextButton(
+                onPressed: () {},
+                child: const Text('See All'),
+              ),
+            ),
+            ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              // Providing a restorationId allows the ListView to restore the
+              // scroll position when a user leaves and returns to the app after it
+              // has been killed while running in the background.
+              restorationId: 'HomeItemListView',
+              itemCount: items.length,
+              itemBuilder: (BuildContext context, int index) {
+                final item = items[index];
+      
+                return ListTile(
+                    title: Text('SampleItem ${item.id}'),
+                    leading: const CircleAvatar(
+                      // Display the Flutter Logo image asset.
+                      foregroundImage:
+                          AssetImage('assets/images/flutter_logo.png'),
+                    ),
+                    onTap: () {
+                      // Navigate to the details page. If the user leaves and returns to
+                      // the app after it has been killed while running in the
+                      // background, the navigation stack is restored.
+                      Navigator.restorablePushNamed(
+                        context,
+                        HomeItemDetailsView.routeName,
+                      );
+                    });
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

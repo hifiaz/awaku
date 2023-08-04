@@ -1,4 +1,5 @@
 import 'package:awaku/src/home/apple_watch.dart';
+import 'package:awaku/src/auth/login_view.dart';
 import 'package:awaku/src/settings/device/add_device_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -28,6 +29,7 @@ class MyApp extends StatelessWidget {
       listenable: settingsController,
       builder: (BuildContext context, Widget? child) {
         return MaterialApp(
+          debugShowCheckedModeBanner: false,
           // Providing a restorationScopeId allows the Navigator built by the
           // MaterialApp to restore the navigation stack when a user leaves and
           // returns to the app after it has been killed while running in the
@@ -69,17 +71,19 @@ class MyApp extends StatelessWidget {
               settings: routeSettings,
               builder: (BuildContext context) {
                 switch (routeSettings.name) {
+                  case LoginView.routeName:
+                    return const LoginView();
                   case SettingsView.routeName:
                     return SettingsView(controller: settingsController);
-                  case SampleItemDetailsView.routeName:
-                    return const SampleItemDetailsView();
+                  case HomeItemDetailsView.routeName:
+                    return const HomeItemDetailsView();
                   case AppleWatch.routeName:
                     return const AppleWatch();
                   case AddDeviceView.routeName:
                     return const AddDeviceView();
-                  case SampleItemListView.routeName:
+                  case HomeItemListView.routeName:
                   default:
-                    return const SampleItemListView();
+                    return const LoginView();
                 }
               },
             );
