@@ -1,14 +1,16 @@
 import 'package:awaku/src/bike/bike_view.dart';
 import 'package:awaku/src/home/apple_watch.dart';
+import 'package:awaku/utils/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ftms/flutter_ftms.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:watch_connectivity/watch_connectivity.dart';
 
 import '../settings/settings_view.dart';
 import 'home_item.dart';
 import 'home_item_details_view.dart';
 
-class HomeItemListView extends ConsumerWidget {
+class HomeItemListView extends ConsumerStatefulWidget {
   const HomeItemListView({
     super.key,
     this.items = const [SampleItem(1), SampleItem(2), SampleItem(3)],
@@ -19,7 +21,27 @@ class HomeItemListView extends ConsumerWidget {
   final List<SampleItem> items;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<HomeItemListView> createState() => _HomeItemListViewState();
+}
+
+class _HomeItemListViewState extends ConsumerState<HomeItemListView> {
+  final _watch = WatchConnectivity();
+
+  var _paired = false;
+  final _log = <HeartRateModel>[];
+
+  @override
+  void initState() {
+    super.initState();
+
+    _watch.contextStream
+        .listen((e) => setState(() => _log.add(HeartRateModel.fromJson(e))));
+
+    initPlatformState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Hello'),
@@ -57,30 +79,31 @@ class HomeItemListView extends ConsumerWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
-                    children: [
-                      Text(
-                        '75',
-                        style: Theme.of(context).textTheme.displayMedium,
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Icon(Icons.favorite,
-                              size: 20, color: Colors.pink),
-                          Text(
-                            'BPM',
-                            style: Theme.of(context).textTheme.bodySmall,
-                          )
-                        ],
-                      ),
-                    ],
-                  ),
+                  if (_paired)
+                    Row(
+                      children: [
+                        Text(
+                          _log.isEmpty ? '' : '${_log.last.heartRate}',
+                          style: Theme.of(context).textTheme.displaySmall,
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Icon(Icons.favorite,
+                                size: 20, color: Colors.pink),
+                            Text(
+                              'BPM',
+                              style: Theme.of(context).textTheme.bodySmall,
+                            )
+                          ],
+                        ),
+                      ],
+                    ),
                   Row(
                     children: [
                       Text(
                         '56',
-                        style: Theme.of(context).textTheme.displayMedium,
+                        style: Theme.of(context).textTheme.displaySmall,
                       ),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -98,14 +121,17 @@ class HomeItemListView extends ConsumerWidget {
                   Row(
                     children: [
                       Text(
-                        '20',
-                        style: Theme.of(context).textTheme.displayMedium,
+                        calculateBodyMassIndex(78, 168).toStringAsFixed(1),
+                        style: Theme.of(context).textTheme.displaySmall,
                       ),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Icon(Icons.arrow_outward,
-                              size: 20, color: Colors.purple),
+                          calculateBodyMassIndex(78, 168) >= 25
+                              ? const Icon(Icons.arrow_outward,
+                                  size: 20, color: Colors.red)
+                              : const Icon(Icons.arrow_forward,
+                                  size: 20, color: Colors.green),
                           Text(
                             'BMI',
                             style: Theme.of(context).textTheme.bodySmall,
@@ -139,7 +165,8 @@ class HomeItemListView extends ConsumerWidget {
                                 onTap: () => Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => BikeView(ftmsDevice: b),
+                                    builder: (context) =>
+                                        BikeView(ftmsDevice: b),
                                   ),
                                 ),
                               )
@@ -165,10 +192,10 @@ class HomeItemListView extends ConsumerWidget {
               // scroll position when a user leaves and returns to the app after it
               // has been killed while running in the background.
               restorationId: 'HomeItemListView',
-              itemCount: items.length,
+              itemCount: widget.items.length,
               itemBuilder: (BuildContext context, int index) {
-                final item = items[index];
-      
+                final item = widget.items[index];
+
                 return ListTile(
                     title: Text('SampleItem ${item.id}'),
                     leading: const CircleAvatar(
@@ -191,5 +218,10 @@ class HomeItemListView extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  void initPlatformState() async {
+    _paired = await _watch.isPaired;
+    setState(() {});
   }
 }

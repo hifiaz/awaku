@@ -24,9 +24,8 @@ struct ContentView: View {
                    Text("❤️")
                        .font(.system(size: 50))
                    Spacer()
-
+                  
                }
-               
                HStack{
                    Text("\(value)")
                        .fontWeight(.regular)
@@ -112,9 +111,9 @@ struct ContentView: View {
             if type == .heartRate {
                 lastHeartRate = sample.quantity.doubleValue(for: heartRateQuantity)
             }
-            
             self.value = Int(lastHeartRate)
         }
+        session.updateApplicationContext(["heart_rate": lastHeartRate])
     }
 }
 

@@ -680,6 +680,7 @@
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "awaku-Watch-App-Info.plist";
+				INFOPLIST_KEY_NSHealthClinicalHealthRecordsShareUsageDescription = "We will sync your data with the Apple Health app to give you better insights";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "We will sync your data with the Apple Health app to give you insights<";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "We will sync your data with the Apple Health app to give you better insights";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
@@ -726,6 +727,7 @@
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "awaku-Watch-App-Info.plist";
+				INFOPLIST_KEY_NSHealthClinicalHealthRecordsShareUsageDescription = "We will sync your data with the Apple Health app to give you better insights";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "We will sync your data with the Apple Health app to give you insights<";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "We will sync your data with the Apple Health app to give you better insights";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
@@ -769,6 +771,7 @@
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "awaku-Watch-App-Info.plist";
+				INFOPLIST_KEY_NSHealthClinicalHealthRecordsShareUsageDescription = "We will sync your data with the Apple Health app to give you better insights";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "We will sync your data with the Apple Health app to give you insights<";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "We will sync your data with the Apple Health app to give you better insights";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
