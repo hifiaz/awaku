@@ -38,16 +38,6 @@ class AuthService {
   Future<void> signout() async {
     return await _firebaseAuth.signOut();
   }
-
-  // Future<String> login(String email, String password) async {
-  //   return Future.delayed(const Duration(milliseconds: 5000))
-  //       .then((onValue) => 'authToken');
-  // }
-
-  // Future<String> register(String email, String password) async {
-  //   return Future.delayed(const Duration(milliseconds: 5000))
-  //       .then((onValue) => 'authToken');
-  // }
 }
 
 final authServiceProvider =

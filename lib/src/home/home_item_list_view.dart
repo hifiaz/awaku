@@ -5,6 +5,7 @@ import 'package:flutter_ftms/flutter_ftms.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:watch_connectivity/watch_connectivity.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'home_item.dart';
 
@@ -175,10 +176,10 @@ class _HomeItemListViewState extends ConsumerState<HomeItemListView> {
               },
             ),
             ListTile(
-              title: const Text('History'),
+              title: Text(AppLocalizations.of(context)!.history),
               trailing: TextButton(
                 onPressed: () {},
-                child: const Text('See All'),
+                child: Text(AppLocalizations.of(context)!.seeAll),
               ),
             ),
             ListView.builder(

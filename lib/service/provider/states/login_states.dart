@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginState extends Equatable {
   const LoginState();
@@ -28,6 +29,7 @@ class LoginStateSuccess extends LoginState {
   List<Object> get props => [];
 }
 
+
 class LoginStateError extends LoginState {
   final String error;
 
@@ -42,4 +44,13 @@ class LogoutStateSuccess extends LoginState {
 
   @override
   List<Object> get props => [];
+}
+
+class RegisterStateSuccess extends LoginState {
+  final User user;
+
+  const RegisterStateSuccess(this.user);
+
+  @override
+  List<Object> get props => [user];
 }

@@ -4,6 +4,7 @@ import 'package:awaku/src/settings/settings_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 /// Displays the various settings that can be customized by the user.
 ///
@@ -39,7 +40,7 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
     // final user = ref.watch(loginControllerProvider);
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Settings'),
+          title: Text(AppLocalizations.of(context)!.settings),
         ),
         body: isLoading
             ? const Center(child: CircularProgressIndicator())
@@ -47,19 +48,19 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
                 children: [
                   ListTile(
                     leading: const Icon(Icons.account_box_outlined),
-                    title: const Text('Personal Data'),
+                    title: Text(AppLocalizations.of(context)!.personalData),
                     trailing: const Icon(Icons.arrow_forward_ios_outlined),
-                    onTap: () => context.push('/setting/add-device'),
+                    onTap: () => context.push('/setting/profile'),
                   ),
                   ListTile(
                     leading: const Icon(Icons.device_hub),
-                    title: const Text('Devices'),
+                    title: Text(AppLocalizations.of(context)!.devices),
                     trailing: const Icon(Icons.arrow_forward_ios_outlined),
                     onTap: () => context.push('/setting/add-device'),
                   ),
                   ListTile(
                     leading: const Icon(Icons.dark_mode),
-                    title: const Text('Themes'),
+                    title: Text(AppLocalizations.of(context)!.themes),
                     trailing: DropdownButton<ThemeMode>(
                       underline: const SizedBox(),
                       // Read the selected themeMode from the controller
@@ -86,10 +87,10 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
                     ),
                   ),
                   ListTile(
-                    title: const Text('Log Out'),
+                    title: Text(AppLocalizations.of(context)!.logout),
                     trailing: const Icon(Icons.logout),
                     onTap: () {
-                      ref.read(loginControllerProvider.notifier).logout();
+                      ref.read(authenticationProvider.notifier).logout();
                     },
                   ),
                 ],

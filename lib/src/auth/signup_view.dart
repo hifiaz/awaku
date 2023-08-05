@@ -16,10 +16,15 @@ class _SignupViewState extends ConsumerState<SignupView> {
   final TextEditingController password = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    ref.listen(loginControllerProvider, (previous, next) {
+    ref.listen(authenticationProvider, (previous, next) {
       if (next is LoginStateError) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(next.error),
+          behavior: SnackBarBehavior.floating,
+        ));
+      } else if (next is RegisterStateSuccess) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('Profile Created'),
           behavior: SnackBarBehavior.floating,
         ));
       }
@@ -49,7 +54,7 @@ class _SignupViewState extends ConsumerState<SignupView> {
                   title: 'Signup',
                   isDisabled: false,
                   onPressed: () => ref
-                      .read(loginControllerProvider.notifier)
+                      .read(authenticationProvider.notifier)
                       .register(email.text, password.text),
                 ),
               ),

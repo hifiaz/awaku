@@ -1,9 +1,10 @@
+import 'package:awaku/service/provider/profile_provider.dart';
 import 'package:awaku/service/provider/states/login_states.dart';
 import 'package:awaku/service/repository/auth_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class LoginController extends StateNotifier<LoginState> {
-  LoginController(this.ref) : super(const LoginStateInitial());
+class AuthenticationProvider extends StateNotifier<LoginState> {
+  AuthenticationProvider(this.ref) : super(const LoginStateInitial());
 
   final Ref ref;
 
@@ -19,13 +20,15 @@ class LoginController extends StateNotifier<LoginState> {
 
   void register(String email, String password) async {
     state = const LoginStateLoading();
-
-    try {
-      await ref.read(authRepositoryProvider).login(email, password);
-      state = const LoginStateSuccess();
-    } catch (e) {
-      state = LoginStateError(e.toString());
-    }
+    final response =
+        await ref.read(authRepositoryProvider).register(email, password);
+    state = response.fold(
+      (l) => LoginStateError(l.toString()),
+      (r) {
+        ref.read(profileProvider.notifier).create(r);
+        return RegisterStateSuccess(r);
+      },
+    );
   }
 
   void logout() async {
@@ -40,7 +43,7 @@ class LoginController extends StateNotifier<LoginState> {
   }
 }
 
-final loginControllerProvider =
-    StateNotifierProvider<LoginController, LoginState>((ref) {
-  return LoginController(ref);
+final authenticationProvider =
+    StateNotifierProvider<AuthenticationProvider, LoginState>((ref) {
+  return AuthenticationProvider(ref);
 });

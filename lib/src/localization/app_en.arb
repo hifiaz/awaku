@@ -2,5 +2,17 @@
   "appTitle": "Awaku",
   "@appTitle": {
     "description": "The title of the application"
-  }
+  },
+  "settings": "Settings",
+  "personalData": "Personal Data",
+  "yourName": "Your Name",
+  "dateOfBirth": "Date of Birth",
+  "weight": "Weight",
+  "height": "Height",
+  "devices": "Devices",
+  "themes": "Themes",
+  "logout": "Log Out",
+  "history": "History",
+  "seeAll": "See All",
+  "saveChanges": "Save Changes"
 }

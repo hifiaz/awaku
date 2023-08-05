@@ -4,6 +4,7 @@ import 'package:awaku/src/auth/login_view.dart';
 import 'package:awaku/src/home/home_item_details_view.dart';
 import 'package:awaku/src/home/home_item_list_view.dart';
 import 'package:awaku/src/settings/device/add_device_view.dart';
+import 'package:awaku/src/settings/profile/profile_page.dart';
 import 'package:awaku/src/settings/settings_view.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -24,26 +25,30 @@ class RouterNotifier extends ChangeNotifier {
 
   RouterNotifier(this._ref) {
     _ref.listen<LoginState>(
-      loginControllerProvider,
+      authenticationProvider,
       (_, __) => notifyListeners(),
     );
   }
 
   String? _redirectLogic(GoRouterState state) {
     User? user = FirebaseAuth.instance.currentUser;
-    final loginState = _ref.read(loginControllerProvider);
+    final loginState = _ref.read(authenticationProvider);
 
-    final areWeLoggingIn = state.uri.path == '/login';
+    // final areWeLoggingIn = state.uri.path == '/login';
 
     if (loginState is LoginStateInitial && user == null) {
-      return areWeLoggingIn ? null : '/login';
+      return '/login';
+    }
+
+    if (loginState is RegisterStateSuccess) {
+      return '/login';
     }
 
     if (loginState is LogoutStateSuccess) {
       return '/login';
     }
 
-    if (areWeLoggingIn) return '/';
+    // if (areWeLoggingIn) return '/';
 
     return null;
   }
@@ -73,6 +78,11 @@ class RouterNotifier extends ChangeNotifier {
               name: 'addDevice',
               builder: (context, state) => const AddDeviceView(),
               path: 'add-device',
+            ),
+            GoRoute(
+              name: 'profile',
+              builder: (context, state) => const ProfileView(),
+              path: 'profile',
             ),
           ],
         ),

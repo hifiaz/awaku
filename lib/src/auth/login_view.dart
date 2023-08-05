@@ -4,6 +4,7 @@ import 'package:awaku/src/auth/signup_view.dart';
 import 'package:awaku/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logger/logger.dart';
 
 class LoginView extends ConsumerStatefulWidget {
   const LoginView({super.key});
@@ -17,7 +18,8 @@ class _LoginViewState extends ConsumerState<LoginView> {
   final TextEditingController password = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    ref.listen(loginControllerProvider, (previous, next) {
+    ref.listen(authenticationProvider, (previous, next) {
+      Logger().d('message $next');
       if (next is LoginStateError) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(next.error),
@@ -70,7 +72,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
                     isDisabled: false,
                     title: 'Sign in',
                     onPressed: () => ref
-                        .read(loginControllerProvider.notifier)
+                        .read(authenticationProvider.notifier)
                         .login(email.text, password.text),
                   ),
                 ),
