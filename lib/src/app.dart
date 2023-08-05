@@ -1,17 +1,13 @@
-import 'package:awaku/src/home/apple_watch.dart';
-import 'package:awaku/src/auth/login_view.dart';
-import 'package:awaku/src/settings/device/add_device_view.dart';
+import 'package:awaku/service/provider/router_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'home/home_item_details_view.dart';
-import 'home/home_item_list_view.dart';
 import 'settings/settings_controller.dart';
-import 'settings/settings_view.dart';
 
 /// The Widget that configures your application.
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({
     super.key,
     required this.settingsController,
@@ -20,15 +16,17 @@ class MyApp extends StatelessWidget {
   final SettingsController settingsController;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final router = ref.watch(routerProvider);
     // Glue the SettingsController to the MaterialApp.
     //
     // The ListenableBuilder Widget listens to the SettingsController for changes.
     // Whenever the user updates their settings, the MaterialApp is rebuilt.
+
     return ListenableBuilder(
       listenable: settingsController,
       builder: (BuildContext context, Widget? child) {
-        return MaterialApp(
+        return MaterialApp.router(
           debugShowCheckedModeBanner: false,
           // Providing a restorationScopeId allows the Navigator built by the
           // MaterialApp to restore the navigation stack when a user leaves and
@@ -63,31 +61,10 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(useMaterial3: true),
           darkTheme: ThemeData.dark(useMaterial3: true),
           themeMode: settingsController.themeMode,
-
-          // Define a function to handle named routes in order to support
-          // Flutter web url navigation and deep linking.
-          onGenerateRoute: (RouteSettings routeSettings) {
-            return MaterialPageRoute<void>(
-              settings: routeSettings,
-              builder: (BuildContext context) {
-                switch (routeSettings.name) {
-                  case LoginView.routeName:
-                    return const LoginView();
-                  case SettingsView.routeName:
-                    return SettingsView(controller: settingsController);
-                  case HomeItemDetailsView.routeName:
-                    return const HomeItemDetailsView();
-                  case AppleWatch.routeName:
-                    return const AppleWatch();
-                  case AddDeviceView.routeName:
-                    return const AddDeviceView();
-                  case HomeItemListView.routeName:
-                  default:
-                    return const LoginView();
-                }
-              },
-            );
-          },
+          // routeInformationParser: router.routeInformationParser,
+          // routeInformationProvider: router.routeInformationProvider,
+          // routerDelegate: router.routerDelegate,
+          routerConfig: router
         );
       },
     );

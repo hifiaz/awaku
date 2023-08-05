@@ -1,6 +1,6 @@
 import 'package:awaku/service/provider/authentication_provider.dart';
+import 'package:awaku/service/provider/states/login_states.dart';
 import 'package:awaku/src/auth/signup_view.dart';
-import 'package:awaku/src/home/home_item_list_view.dart';
 import 'package:awaku/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -17,35 +17,14 @@ class _LoginViewState extends ConsumerState<LoginView> {
   final TextEditingController password = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    ref.listen(authNotifierProvider, (previous, next) {
-      next.maybeWhen(
-        orElse: () => null,
-        authenticated: (user) {
-          // Navigate to any screen
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('User Logged In'),
-              behavior: SnackBarBehavior.floating,
-            ),
-          );
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const HomeItemListView(),
-            ),
-          );
-          // Navigator.pushNamed(context, HomeItemListView.routeName);
-        },
-        unauthenticated: (message) =>
-            ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(message!),
-            behavior: SnackBarBehavior.floating,
-          ),
-        ),
-      );
+    ref.listen(loginControllerProvider, (previous, next) {
+      if (next is LoginStateError) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(next.error),
+          behavior: SnackBarBehavior.floating,
+        ));
+      }
     });
-
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -64,7 +43,10 @@ class _LoginViewState extends ConsumerState<LoginView> {
                     ),
                   ),
                 ),
-                const CircleAvatar(radius: 50),
+                const CircleAvatar(
+                  radius: 50,
+                  backgroundImage: AssetImage('assets/images/logo.png'),
+                ),
                 const SizedBox(height: 10),
                 Text(
                   'Awaku: Record Your Health Body',
@@ -87,14 +69,9 @@ class _LoginViewState extends ConsumerState<LoginView> {
                     width: double.infinity,
                     isDisabled: false,
                     title: 'Sign in',
-                    loading: ref
-                        .watch(authNotifierProvider)
-                        .maybeWhen(orElse: () => false, loading: () => true),
-                    onPressed: () =>
-                        ref.read(authNotifierProvider.notifier).login(
-                              email: email.text,
-                              password: password.text,
-                            ),
+                    onPressed: () => ref
+                        .read(loginControllerProvider.notifier)
+                        .login(email.text, password.text),
                   ),
                 ),
                 const SizedBox(height: 20),

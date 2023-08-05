@@ -1,4 +1,5 @@
 import 'package:awaku/service/provider/authentication_provider.dart';
+import 'package:awaku/service/provider/states/login_states.dart';
 import 'package:awaku/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -15,28 +16,14 @@ class _SignupViewState extends ConsumerState<SignupView> {
   final TextEditingController password = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    ref.listen(authNotifierProvider, (previous, next) {
-      next.maybeWhen(
-        orElse: () => null,
-        authenticated: (user) {
-          // Navigate to any screen
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('User Authenticated'),
-              behavior: SnackBarBehavior.floating,
-            ),
-          );
-        },
-        unauthenticated: (message) =>
-            ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(message!),
-            behavior: SnackBarBehavior.floating,
-          ),
-        ),
-      );
+    ref.listen(loginControllerProvider, (previous, next) {
+      if (next is LoginStateError) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(next.error),
+          behavior: SnackBarBehavior.floating,
+        ));
+      }
     });
-
     return Scaffold(
       appBar: AppBar(title: const Text('Signup')),
       body: SingleChildScrollView(
@@ -61,15 +48,9 @@ class _SignupViewState extends ConsumerState<SignupView> {
                   width: double.infinity,
                   title: 'Signup',
                   isDisabled: false,
-                  onPressed: () =>
-                      ref.read(authNotifierProvider.notifier).signup(
-                            email: email.text,
-                            password: password.text,
-                          ),
-                  loading: ref.watch(authNotifierProvider).maybeWhen(
-                        orElse: () => false,
-                        loading: () => true,
-                      ),
+                  onPressed: () => ref
+                      .read(loginControllerProvider.notifier)
+                      .register(email.text, password.text),
                 ),
               ),
               const SizedBox(height: 40),

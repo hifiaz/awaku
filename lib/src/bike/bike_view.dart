@@ -89,7 +89,8 @@ class _BikeViewState extends State<BikeView> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          Text('${(instan.value / 60).toStringAsFixed(2)} ${instan.unit}'),
+                          Text(
+                              '${(instan.value / 60).toStringAsFixed(2)} ${instan.unit}'),
                           const SizedBox(width: 10),
                           Text('${time.value} ${time.unit}'),
                           const SizedBox(width: 10),
@@ -106,10 +107,10 @@ class _BikeViewState extends State<BikeView> {
                             Text(
                               '${power.value}',
                               textScaleFactor: 4,
-                              style:
-                                  TextStyle(color: Theme.of(context).primaryColor),
+                              style: TextStyle(
+                                  color: Theme.of(context).primaryColor),
                             ),
-                           const Text('Power')
+                            const Text('Power')
                           ],
                         ),
                       ),

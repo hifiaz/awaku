@@ -1,85 +1,98 @@
 import 'package:awaku/service/provider/authentication_provider.dart';
-import 'package:awaku/src/auth/login_view.dart';
-import 'package:awaku/src/settings/device/add_device_view.dart';
+import 'package:awaku/src/settings/settings_controller.dart';
+import 'package:awaku/src/settings/settings_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import 'settings_controller.dart';
+import 'package:go_router/go_router.dart';
 
 /// Displays the various settings that can be customized by the user.
 ///
 /// When a user changes a setting, the SettingsController is updated and
 /// Widgets that listen to the SettingsController are rebuilt.
-class SettingsView extends ConsumerWidget {
-  const SettingsView({super.key, required this.controller});
+class SettingsView extends ConsumerStatefulWidget {
+  const SettingsView({super.key});
 
   static const routeName = '/settings';
 
-  final SettingsController controller;
+  @override
+  ConsumerState<SettingsView> createState() => _SettingsViewState();
+}
+
+class _SettingsViewState extends ConsumerState<SettingsView> {
+  bool isLoading = true;
+  late SettingsController controller = SettingsController(SettingsService());
+  @override
+  void initState() {
+    inital();
+    super.initState();
+  }
+
+  Future<void> inital() async {
+    await controller.loadSettings();
+    setState(() {
+      isLoading = false;
+    });
+  }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(authNotifierProvider);
+  Widget build(BuildContext context) {
+    // final user = ref.watch(loginControllerProvider);
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Settings'),
-      ),
-      body: user.when(
-        initial: () => const SizedBox(),
-        unauthenticated: (message) => const Center(child: Text('Please Login')),
-        loading: () => const Center(
-          child: CircularProgressIndicator(),
+        appBar: AppBar(
+          title: const Text('Settings'),
         ),
-        authenticated: (user) {
-          return Column(
-            children: [
-              Text('${user.email}'),
-              ListTile(
-                title: const Text('Add Device'),
-                trailing: const Icon(Icons.arrow_forward_ios_outlined),
-                onTap: () => Navigator.restorablePushNamed(
-                    context, AddDeviceView.routeName),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(16),
-                // Glue the SettingsController to the theme selection DropdownButton.
-                //
-                // When a user selects a theme from the dropdown list, the
-                // SettingsController is updated, which rebuilds the MaterialApp.
-                child: DropdownButton<ThemeMode>(
-                  isExpanded: true,
-                  // Read the selected themeMode from the controller
-                  value: controller.themeMode,
-                  // Call the updateThemeMode method any time the user selects a theme.
-                  onChanged: controller.updateThemeMode,
-                  items: const [
-                    DropdownMenuItem(
-                      value: ThemeMode.system,
-                      child: Text('System Theme'),
+        body: isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : Column(
+                children: [
+                  ListTile(
+                    leading: const Icon(Icons.account_box_outlined),
+                    title: const Text('Personal Data'),
+                    trailing: const Icon(Icons.arrow_forward_ios_outlined),
+                    onTap: () => context.push('/setting/add-device'),
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.device_hub),
+                    title: const Text('Devices'),
+                    trailing: const Icon(Icons.arrow_forward_ios_outlined),
+                    onTap: () => context.push('/setting/add-device'),
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.dark_mode),
+                    title: const Text('Themes'),
+                    trailing: DropdownButton<ThemeMode>(
+                      underline: const SizedBox(),
+                      // Read the selected themeMode from the controller
+                      value: controller.themeMode,
+                      // Call the updateThemeMode method any time the user selects a theme.
+                      onChanged: (val) {
+                        controller.updateThemeMode(val);
+                        inital();
+                      },
+                      items: const [
+                        DropdownMenuItem(
+                          value: ThemeMode.system,
+                          child: Text('System Theme'),
+                        ),
+                        DropdownMenuItem(
+                          value: ThemeMode.light,
+                          child: Text('Light Theme'),
+                        ),
+                        DropdownMenuItem(
+                          value: ThemeMode.dark,
+                          child: Text('Dark Theme'),
+                        )
+                      ],
                     ),
-                    DropdownMenuItem(
-                      value: ThemeMode.light,
-                      child: Text('Light Theme'),
-                    ),
-                    DropdownMenuItem(
-                      value: ThemeMode.dark,
-                      child: Text('Dark Theme'),
-                    )
-                  ],
-                ),
-              ),
-              ListTile(
-                title: const Text('Log Out'),
-                trailing: const Icon(Icons.logout),
-                onTap: () {
-                  ref.read(authNotifierProvider.notifier).logout();
-                  Navigator.pushReplacementNamed(context, LoginView.routeName);
-                },
-              ),
-            ],
-          );
-        },
-      ),
-    );
+                  ),
+                  ListTile(
+                    title: const Text('Log Out'),
+                    trailing: const Icon(Icons.logout),
+                    onTap: () {
+                      ref.read(loginControllerProvider.notifier).logout();
+                    },
+                  ),
+                ],
+              ));
   }
 }

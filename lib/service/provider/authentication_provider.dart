@@ -1,45 +1,46 @@
-import 'package:awaku/service/auth/auth_data_source.dart';
-import 'package:awaku/service/auth/auth_state.dart';
+import 'package:awaku/service/provider/states/login_states.dart';
+import 'package:awaku/service/repository/auth_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class AuthNotifier extends StateNotifier<AuthenticationState> {
-  AuthNotifier(this._dataSource) : super(const AuthenticationState.initial());
+class LoginController extends StateNotifier<LoginState> {
+  LoginController(this.ref) : super(const LoginStateInitial());
 
-  final AuthDataSource _dataSource;
+  final Ref ref;
 
-  Future<void> login({required String email, required String password}) async {
-    state = const AuthenticationState.loading();
-    final response = await _dataSource.login(email: email, password: password);
+  void login(String email, String password) async {
+    state = const LoginStateLoading();
+    final response =
+        await ref.read(authRepositoryProvider).login(email, password);
     state = response.fold(
-      (error) => AuthenticationState.unauthenticated(message: error),
-      (response) => AuthenticationState.authenticated(user: response!),
+      (l) => LoginStateError(l.toString()),
+      (r) => const LoginStateSuccess(),
     );
   }
 
-  Future<void> signup({required String email, required String password}) async {
-    state = const AuthenticationState.loading();
-    final response = await _dataSource.signup(email: email, password: password);
-    state = response.fold(
-      (error) => AuthenticationState.unauthenticated(message: error),
-      (response) => AuthenticationState.authenticated(user: response),
-    );
+  void register(String email, String password) async {
+    state = const LoginStateLoading();
+
+    try {
+      await ref.read(authRepositoryProvider).login(email, password);
+      state = const LoginStateSuccess();
+    } catch (e) {
+      state = LoginStateError(e.toString());
+    }
   }
 
-  Future<void> logout() async {
-    await _dataSource.logout();
-  }
+  void logout() async {
+    state = const LoginStateLoading();
 
-  // Future<void> continueWithGoogle() async {
-  //   state = const AuthenticationState.loading();
-  //   final response = await _dataSource.continueWithGoogle();
-  //   state = response.fold(
-  //     (error) => AuthenticationState.unauthenticated(message: error),
-  //     (response) => AuthenticationState.authenticated(user: response),
-  //   );
-  // }
+    try {
+      await ref.read(authRepositoryProvider).signout();
+      state = const LogoutStateSuccess();
+    } catch (e) {
+      state = LoginStateError(e.toString());
+    }
+  }
 }
 
-final authNotifierProvider =
-    StateNotifierProvider<AuthNotifier, AuthenticationState>(
-  (ref) => AuthNotifier(ref.read(authDataSourceProvider)),
-);
+final loginControllerProvider =
+    StateNotifierProvider<LoginController, LoginState>((ref) {
+  return LoginController(ref);
+});

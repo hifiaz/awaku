@@ -1,14 +1,12 @@
 import 'package:awaku/src/bike/bike_view.dart';
-import 'package:awaku/src/home/apple_watch.dart';
 import 'package:awaku/utils/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ftms/flutter_ftms.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:watch_connectivity/watch_connectivity.dart';
 
-import '../settings/settings_view.dart';
 import 'home_item.dart';
-import 'home_item_details_view.dart';
 
 class HomeItemListView extends ConsumerStatefulWidget {
   const HomeItemListView({
@@ -54,8 +52,7 @@ class _HomeItemListViewState extends ConsumerState<HomeItemListView> {
               // Navigate to the settings page. If the user leaves and returns
               // to the app after it has been killed while running in the
               // background, the navigation stack is restored.
-              Navigator.restorablePushNamed(context, SettingsView.routeName);
-              //
+              context.push('/setting');
               // Navigator.push(
               //   context,
               //   MaterialPageRoute(builder: (context) => const AppleWatch()),
@@ -141,8 +138,7 @@ class _HomeItemListViewState extends ConsumerState<HomeItemListView> {
                     ],
                   ),
                   IconButton(
-                      onPressed: () => Navigator.restorablePushNamed(
-                          context, AppleWatch.routeName),
+                      onPressed: () => context.push('/setting/add-device'),
                       icon: const Icon(Icons.add)),
                 ],
               ),
@@ -203,15 +199,7 @@ class _HomeItemListViewState extends ConsumerState<HomeItemListView> {
                       foregroundImage:
                           AssetImage('assets/images/flutter_logo.png'),
                     ),
-                    onTap: () {
-                      // Navigate to the details page. If the user leaves and returns to
-                      // the app after it has been killed while running in the
-                      // background, the navigation stack is restored.
-                      Navigator.restorablePushNamed(
-                        context,
-                        HomeItemDetailsView.routeName,
-                      );
-                    });
+                    onTap: () => context.push('/detail'));
               },
             ),
           ],
