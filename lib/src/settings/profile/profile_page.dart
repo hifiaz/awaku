@@ -3,6 +3,7 @@ import 'package:awaku/service/provider/states/profile_states.dart';
 import 'package:awaku/utils/validator.dart';
 import 'package:awaku/widgets/custom_button.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -20,6 +21,24 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
   TextEditingController name = TextEditingController();
   TextEditingController height = TextEditingController();
   TextEditingController weight = TextEditingController();
+  DateTime? dob;
+
+  @override
+  void initState() {
+    initialData();
+    super.initState();
+  }
+
+  void initialData() {
+    final profile = ref.read(fetchUserProvider);
+    if (profile.hasValue) {
+      name = TextEditingController(text: profile.value?.name);
+      height = TextEditingController(text: '${profile.value?.height ?? ''}');
+      weight = TextEditingController(text: '${profile.value?.weight ?? ''}');
+      dob = profile.value?.dob;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     ref.listen(profileProvider, (previous, next) {
@@ -72,14 +91,17 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                 ),
-                TextFormField(
-                  controller: name,
-                  decoration: InputDecoration(
-                    fillColor: Colors.blueGrey[50],
-                    filled: true,
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(5.0),
-                        borderSide: BorderSide.none),
+                Container(
+                  decoration: BoxDecoration(
+                      color: Colors.blueGrey[50],
+                      borderRadius: BorderRadius.circular(5.0)),
+                  height: 150,
+                  child: CupertinoDatePicker(
+                    mode: CupertinoDatePickerMode.date,
+                    initialDateTime: dob ?? DateTime(1969, 1, 1),
+                    onDateTimeChanged: (DateTime newDateTime) {
+                      setState(() => dob = newDateTime);
+                    },
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -147,6 +169,8 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                     if (_formPersonal.currentState!.validate()) {
                       ref.read(profileProvider.notifier).update(
                           uid: user!.uid,
+                          name: name.text,
+                          dob: dob,
                           weight: double.parse(weight.text),
                           height: int.parse(height.text));
                     }

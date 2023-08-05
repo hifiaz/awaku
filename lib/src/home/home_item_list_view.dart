@@ -1,3 +1,4 @@
+import 'package:awaku/service/provider/profile_provider.dart';
 import 'package:awaku/src/bike/bike_view.dart';
 import 'package:awaku/utils/extensions.dart';
 import 'package:flutter/material.dart';
@@ -41,10 +42,10 @@ class _HomeItemListViewState extends ConsumerState<HomeItemListView> {
 
   @override
   Widget build(BuildContext context) {
+    final profile = ref.watch(fetchUserProvider);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Hello'),
-        // title: Text(AppLocalizations.of(context)!.appTitle),
+        title: Text('Hello ${profile.value?.name ?? ''}'),
         centerTitle: false,
         actions: [
           IconButton(
@@ -69,141 +70,148 @@ class _HomeItemListViewState extends ConsumerState<HomeItemListView> {
       // In contrast to the default ListView constructor, which requires
       // building all Widgets up front, the ListView.builder constructor lazily
       // builds Widgets as they’re scrolled into view.
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  if (_paired)
+      body: RefreshIndicator(
+        onRefresh: () => ref.read(fetchUserProvider.future),
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    if (_paired)
+                      Row(
+                        children: [
+                          Text(
+                            _log.isEmpty ? '' : '${_log.last.heartRate}',
+                            style: Theme.of(context).textTheme.displaySmall,
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Icon(Icons.favorite,
+                                  size: 20, color: Colors.pink),
+                              Text(
+                                'BPM',
+                                style: Theme.of(context).textTheme.bodySmall,
+                              )
+                            ],
+                          ),
+                        ],
+                      ),
                     Row(
                       children: [
                         Text(
-                          _log.isEmpty ? '' : '${_log.last.heartRate}',
+                          '${profile.value?.weight ?? '0'}',
                           style: Theme.of(context).textTheme.displaySmall,
                         ),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Icon(Icons.favorite,
-                                size: 20, color: Colors.pink),
+                            const Icon(Icons.monitor_weight_outlined,
+                                size: 20, color: Colors.green),
                             Text(
-                              'BPM',
+                              'KG',
                               style: Theme.of(context).textTheme.bodySmall,
                             )
                           ],
                         ),
                       ],
                     ),
-                  Row(
-                    children: [
-                      Text(
-                        '56',
-                        style: Theme.of(context).textTheme.displaySmall,
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Icon(Icons.monitor_weight_outlined,
-                              size: 20, color: Colors.green),
-                          Text(
-                            'KG',
-                            style: Theme.of(context).textTheme.bodySmall,
-                          )
-                        ],
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Text(
-                        calculateBodyMassIndex(78, 168).toStringAsFixed(1),
-                        style: Theme.of(context).textTheme.displaySmall,
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          calculateBodyMassIndex(78, 168) >= 25
-                              ? const Icon(Icons.arrow_outward,
-                                  size: 20, color: Colors.red)
-                              : const Icon(Icons.arrow_forward,
-                                  size: 20, color: Colors.green),
-                          Text(
-                            'BMI',
-                            style: Theme.of(context).textTheme.bodySmall,
-                          )
-                        ],
-                      ),
-                    ],
-                  ),
-                  IconButton(
-                      onPressed: () => context.push('/setting/add-device'),
-                      icon: const Icon(Icons.add)),
-                ],
-              ),
-            ),
-            FutureBuilder(
-              future: FTMS.listDevices(),
-              builder: (c, snapshot) {
-                if (snapshot.hasData) {
-                  return ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: snapshot.data?.length ?? 0,
-                    itemBuilder: (c, index) {
-                      BluetoothDevice b = snapshot.data![index];
-                      return FutureBuilder<bool>(
-                        future: FTMS.isBluetoothDeviceFTMSDevice(b),
-                        builder: (context, snapshot) => (snapshot.data ?? false)
-                            ? ListTile(
-                                title: Text(b.localName),
-                                trailing: const Icon(Icons.arrow_right),
-                                onTap: () => Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        BikeView(ftmsDevice: b),
-                                  ),
-                                ),
-                              )
-                            : const SizedBox(),
-                      );
-                    },
-                  );
-                }
-                return const SizedBox();
-              },
-            ),
-            ListTile(
-              title: Text(AppLocalizations.of(context)!.history),
-              trailing: TextButton(
-                onPressed: () {},
-                child: Text(AppLocalizations.of(context)!.seeAll),
-              ),
-            ),
-            ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              // Providing a restorationId allows the ListView to restore the
-              // scroll position when a user leaves and returns to the app after it
-              // has been killed while running in the background.
-              restorationId: 'HomeItemListView',
-              itemCount: widget.items.length,
-              itemBuilder: (BuildContext context, int index) {
-                final item = widget.items[index];
-
-                return ListTile(
-                    title: Text('SampleItem ${item.id}'),
-                    leading: const CircleAvatar(
-                      // Display the Flutter Logo image asset.
-                      foregroundImage:
-                          AssetImage('assets/images/flutter_logo.png'),
+                    Row(
+                      children: [
+                        Text(
+                          calculateBodyMassIndex(profile.value?.weight ?? 0,
+                                  profile.value?.height ?? 0)
+                              .toStringAsFixed(1),
+                          style: Theme.of(context).textTheme.displaySmall,
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            calculateBodyMassIndex(78, 168) >= 25
+                                ? const Icon(Icons.arrow_outward,
+                                    size: 20, color: Colors.red)
+                                : const Icon(Icons.arrow_forward,
+                                    size: 20, color: Colors.green),
+                            Text(
+                              'BMI',
+                              style: Theme.of(context).textTheme.bodySmall,
+                            )
+                          ],
+                        ),
+                      ],
                     ),
-                    onTap: () => context.push('/detail'));
-              },
-            ),
-          ],
+                    IconButton(
+                        onPressed: () => context.push('/setting/add-device'),
+                        icon: const Icon(Icons.add)),
+                  ],
+                ),
+              ),
+              FutureBuilder(
+                future: FTMS.listDevices(),
+                builder: (c, snapshot) {
+                  if (snapshot.hasData) {
+                    return ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: snapshot.data?.length ?? 0,
+                      itemBuilder: (c, index) {
+                        BluetoothDevice b = snapshot.data![index];
+                        return FutureBuilder<bool>(
+                          future: FTMS.isBluetoothDeviceFTMSDevice(b),
+                          builder: (context, snapshot) =>
+                              (snapshot.data ?? false)
+                                  ? ListTile(
+                                      title: Text(b.localName),
+                                      trailing: const Icon(Icons.arrow_right),
+                                      onTap: () => Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              BikeView(ftmsDevice: b),
+                                        ),
+                                      ),
+                                    )
+                                  : const SizedBox(),
+                        );
+                      },
+                    );
+                  }
+                  return const SizedBox();
+                },
+              ),
+              ListTile(
+                title: Text(AppLocalizations.of(context)!.history),
+                trailing: TextButton(
+                  onPressed: () {},
+                  child: Text(AppLocalizations.of(context)!.seeAll),
+                ),
+              ),
+              ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                // Providing a restorationId allows the ListView to restore the
+                // scroll position when a user leaves and returns to the app after it
+                // has been killed while running in the background.
+                restorationId: 'HomeItemListView',
+                itemCount: widget.items.length,
+                itemBuilder: (BuildContext context, int index) {
+                  final item = widget.items[index];
+
+                  return ListTile(
+                      title: Text('SampleItem ${item.id}'),
+                      leading: const CircleAvatar(
+                        // Display the Flutter Logo image asset.
+                        foregroundImage:
+                            AssetImage('assets/images/flutter_logo.png'),
+                      ),
+                      onTap: () => context.push('/detail'));
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
