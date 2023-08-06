@@ -14,6 +14,8 @@ _$_ProfileModel _$$_ProfileModelFromJson(Map<String, dynamic> json) =>
       weight: (json['weight'] as num?)?.toDouble(),
       name: json['name'] as String?,
       photoUrl: json['photoUrl'] as String?,
+      gender: json['gender'] as String?,
+      waterEnable: json['waterEnable'] as bool?,
       dob: _$JsonConverterFromJson<Timestamp, DateTime>(
           json['dob'], const TimestampConverter().fromJson),
     );
@@ -26,6 +28,8 @@ Map<String, dynamic> _$$_ProfileModelToJson(_$_ProfileModel instance) =>
       'weight': instance.weight,
       'name': instance.name,
       'photoUrl': instance.photoUrl,
+      'gender': instance.gender,
+      'waterEnable': instance.waterEnable,
       'dob': _$JsonConverterToJson<Timestamp, DateTime>(
           instance.dob, const TimestampConverter().toJson),
     };

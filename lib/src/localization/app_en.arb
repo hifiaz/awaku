@@ -14,5 +14,13 @@
   "logout": "Log Out",
   "history": "History",
   "seeAll": "See All",
-  "saveChanges": "Save Changes"
+  "saveChanges": "Save Changes",
+  "health": "Health",
+  "connected": "Connected",
+  "requestAuth": "Request Auth",
+  "intermittentFasting": "Intermittent Fasting",
+  "water": "Drink Water",
+  "feature": "Feature",
+  "tools": "Tools",
+  "gender": "Gender"
 }

@@ -34,6 +34,10 @@ dependencies:
   go_router: ^10.0.0
   equatable: ^2.0.5
   logger: ^2.0.1
+  intl: ^0.18.1
+  liquid_progress_indicator:
+    git:
+     url: https://github.com/Jollastro/liquid_progress_indicator.git
 
 dev_dependencies:
   flutter_test:

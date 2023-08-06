@@ -40,9 +40,11 @@ class ProfileService {
     required String uid,
     String? url,
     String? name,
+    String? gender,
     DateTime? dob,
-    required double weight,
-    required int height,
+    bool? enableWater,
+    double? weight,
+    int? height,
   }) async {
     try {
       var params = {
@@ -51,6 +53,8 @@ class ProfileService {
         'weight': weight,
         'height': height,
         'dob': dob,
+        'gender': gender,
+        'waterEnable': enableWater,
       };
       params.removeWhere((key, value) => value == null);
       await _firebaseStore.collection('user').doc(uid).update(params);

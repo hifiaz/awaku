@@ -1,12 +1,16 @@
-import 'package:awaku/service/provider/profile_provider.dart';
-import 'package:awaku/service/provider/states/profile_states.dart';
-import 'package:awaku/utils/validator.dart';
-import 'package:awaku/widgets/custom_button.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
+
+import 'package:awaku/service/provider/health_provider.dart';
+import 'package:awaku/service/provider/profile_provider.dart';
+import 'package:awaku/service/provider/states/profile_states.dart';
+import 'package:awaku/utils/validator.dart';
+import 'package:awaku/widgets/custom_button.dart';
 
 class ProfileView extends ConsumerStatefulWidget {
   const ProfileView({super.key});
@@ -22,6 +26,7 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
   TextEditingController height = TextEditingController();
   TextEditingController weight = TextEditingController();
   DateTime? dob;
+  String gender = 'male';
 
   @override
   void initState() {
@@ -36,6 +41,7 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
       height = TextEditingController(text: '${profile.value?.height ?? ''}');
       weight = TextEditingController(text: '${profile.value?.weight ?? ''}');
       dob = profile.value?.dob;
+      gender = profile.value?.gender ?? 'male';
     }
   }
 
@@ -83,6 +89,33 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                         borderSide: BorderSide.none),
                   ),
                 ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: Text(
+                    AppLocalizations.of(context)!.gender,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                ),
+                DropdownButtonFormField(
+                    isExpanded: true,
+                    decoration: InputDecoration(
+                      fillColor: Colors.blueGrey[50],
+                      filled: true,
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(5.0),
+                          borderSide: BorderSide.none),
+                    ),
+                    items: const [
+                      DropdownMenuItem(value: 'male', child: Text("Male")),
+                      DropdownMenuItem(value: 'female', child: Text("Female")),
+                    ],
+                    hint: const Text("Select City"),
+                    value: gender,
+                    onChanged: (val) {
+                      setState(() {
+                        gender = val!;
+                      });
+                    }),
                 const SizedBox(height: 10),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -92,16 +125,18 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                   ),
                 ),
                 Container(
+                  height: 60,
                   decoration: BoxDecoration(
-                      color: Colors.blueGrey[50],
-                      borderRadius: BorderRadius.circular(5.0)),
-                  height: 150,
-                  child: CupertinoDatePicker(
-                    mode: CupertinoDatePickerMode.date,
-                    initialDateTime: dob ?? DateTime(1969, 1, 1),
-                    onDateTimeChanged: (DateTime newDateTime) {
-                      setState(() => dob = newDateTime);
-                    },
+                    color: Colors.blueGrey[50],
+                    borderRadius: BorderRadius.circular(5.0),
+                  ),
+                  child: Center(
+                    child: ListTile(
+                      title: Text(dob != null
+                          ? DateFormat("yyyy-MM-dd").format(dob!)
+                          : ''),
+                      onTap: () => showBottom(),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -165,14 +200,19 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                   width: double.infinity,
                   isDisabled: false,
                   title: AppLocalizations.of(context)!.saveChanges,
-                  onPressed: () {
+                  onPressed: () async {
                     if (_formPersonal.currentState!.validate()) {
                       ref.read(profileProvider.notifier).update(
-                          uid: user!.uid,
-                          name: name.text,
-                          dob: dob,
+                            uid: user!.uid,
+                            name: name.text,
+                            dob: dob,
+                            weight: double.parse(weight.text),
+                            height: int.parse(height.text),
+                            gender: gender,
+                          );
+                      await ref.read(healthProvider).addWeightAndHeight(
                           weight: double.parse(weight.text),
-                          height: int.parse(height.text));
+                          height: double.parse(height.text));
                     }
                   },
                 ),
@@ -181,6 +221,45 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
           ),
         ),
       ),
+    );
+  }
+
+  void showBottom() {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          height: 250,
+          decoration: BoxDecoration(
+              color: Colors.blueGrey[50],
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(5.0),
+                topRight: Radius.circular(5.0),
+              )),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: () => context.pop(),
+                  child: const Text('Done'),
+                ),
+              ),
+              SizedBox(
+                height: 200,
+                child: CupertinoDatePicker(
+                  mode: CupertinoDatePickerMode.date,
+                  initialDateTime: dob ?? DateTime(1969, 1, 1),
+                  onDateTimeChanged: (DateTime newDateTime) {
+                    setState(() => dob = newDateTime);
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

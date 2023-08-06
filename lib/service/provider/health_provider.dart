@@ -45,6 +45,35 @@ class HealthProvider {
     return success;
   }
 
+  Future<bool> addWeightAndHeight({double? weight, double? height}) async {
+    final earlier = now.subtract(const Duration(minutes: 20));
+    bool success = true;
+    if (weight != null) {
+      success &= await health.writeHealthData(
+          weight, HealthDataType.WEIGHT, earlier, now);
+    }
+    if (height != null) {
+      success &= await health.writeHealthData(
+          height.toDouble(), HealthDataType.HEIGHT, earlier, now);
+    }
+    return success;
+  }
+
+  Future<bool> addBike(
+      {required DateTime start,
+      required DateTime end,
+      int? distance,
+      int? calories}) async {
+    bool success = true;
+    success &= await health.writeWorkoutData(
+        HealthWorkoutActivityType.BIKING, start, end,
+        totalDistance: distance,
+        totalDistanceUnit: HealthDataUnit.METER,
+        totalEnergyBurned: calories,
+        totalEnergyBurnedUnit: HealthDataUnit.KILOCALORIE);
+    return success;
+  }
+
   Future<List<HealthDataPoint>> getDataHealth(
       {double? water, double? weight}) async {
     final yesterday = now.subtract(const Duration(hours: 24));

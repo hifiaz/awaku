@@ -1,8 +1,7 @@
 import 'package:awaku/service/provider/authentication_provider.dart';
 import 'package:awaku/service/provider/states/login_states.dart';
 import 'package:awaku/src/auth/login_view.dart';
-import 'package:awaku/src/home/home_item_details_view.dart';
-import 'package:awaku/src/home/home_item_list_view.dart';
+import 'package:awaku/src/home/home_view.dart';
 import 'package:awaku/src/settings/device/add_device_view.dart';
 import 'package:awaku/src/settings/profile/profile_page.dart';
 import 'package:awaku/src/settings/settings_view.dart';
@@ -61,13 +60,8 @@ class RouterNotifier extends ChangeNotifier {
         ),
         GoRoute(
           name: 'home',
-          builder: (context, state) => const HomeItemListView(),
+          builder: (context, state) => const HomeView(),
           path: '/',
-        ),
-        GoRoute(
-          name: 'detail',
-          builder: (context, state) => const HomeItemDetailsView(),
-          path: '/detail',
         ),
         GoRoute(
           name: 'setting',

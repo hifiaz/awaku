@@ -26,6 +26,8 @@ mixin _$ProfileModel {
   double? get weight => throw _privateConstructorUsedError;
   String? get name => throw _privateConstructorUsedError;
   String? get photoUrl => throw _privateConstructorUsedError;
+  String? get gender => throw _privateConstructorUsedError;
+  bool? get waterEnable => throw _privateConstructorUsedError;
   @TimestampConverter()
   DateTime? get dob => throw _privateConstructorUsedError;
 
@@ -48,6 +50,8 @@ abstract class $ProfileModelCopyWith<$Res> {
       double? weight,
       String? name,
       String? photoUrl,
+      String? gender,
+      bool? waterEnable,
       @TimestampConverter() DateTime? dob});
 }
 
@@ -70,6 +74,8 @@ class _$ProfileModelCopyWithImpl<$Res, $Val extends ProfileModel>
     Object? weight = freezed,
     Object? name = freezed,
     Object? photoUrl = freezed,
+    Object? gender = freezed,
+    Object? waterEnable = freezed,
     Object? dob = freezed,
   }) {
     return _then(_value.copyWith(
@@ -97,6 +103,14 @@ class _$ProfileModelCopyWithImpl<$Res, $Val extends ProfileModel>
           ? _value.photoUrl
           : photoUrl // ignore: cast_nullable_to_non_nullable
               as String?,
+      gender: freezed == gender
+          ? _value.gender
+          : gender // ignore: cast_nullable_to_non_nullable
+              as String?,
+      waterEnable: freezed == waterEnable
+          ? _value.waterEnable
+          : waterEnable // ignore: cast_nullable_to_non_nullable
+              as bool?,
       dob: freezed == dob
           ? _value.dob
           : dob // ignore: cast_nullable_to_non_nullable
@@ -120,6 +134,8 @@ abstract class _$$_ProfileModelCopyWith<$Res>
       double? weight,
       String? name,
       String? photoUrl,
+      String? gender,
+      bool? waterEnable,
       @TimestampConverter() DateTime? dob});
 }
 
@@ -140,6 +156,8 @@ class __$$_ProfileModelCopyWithImpl<$Res>
     Object? weight = freezed,
     Object? name = freezed,
     Object? photoUrl = freezed,
+    Object? gender = freezed,
+    Object? waterEnable = freezed,
     Object? dob = freezed,
   }) {
     return _then(_$_ProfileModel(
@@ -167,6 +185,14 @@ class __$$_ProfileModelCopyWithImpl<$Res>
           ? _value.photoUrl
           : photoUrl // ignore: cast_nullable_to_non_nullable
               as String?,
+      gender: freezed == gender
+          ? _value.gender
+          : gender // ignore: cast_nullable_to_non_nullable
+              as String?,
+      waterEnable: freezed == waterEnable
+          ? _value.waterEnable
+          : waterEnable // ignore: cast_nullable_to_non_nullable
+              as bool?,
       dob: freezed == dob
           ? _value.dob
           : dob // ignore: cast_nullable_to_non_nullable
@@ -185,6 +211,8 @@ class _$_ProfileModel implements _ProfileModel {
       this.weight,
       this.name,
       this.photoUrl,
+      this.gender,
+      this.waterEnable,
       @TimestampConverter() this.dob});
 
   factory _$_ProfileModel.fromJson(Map<String, dynamic> json) =>
@@ -203,12 +231,16 @@ class _$_ProfileModel implements _ProfileModel {
   @override
   final String? photoUrl;
   @override
+  final String? gender;
+  @override
+  final bool? waterEnable;
+  @override
   @TimestampConverter()
   final DateTime? dob;
 
   @override
   String toString() {
-    return 'ProfileModel(uid: $uid, email: $email, height: $height, weight: $weight, name: $name, photoUrl: $photoUrl, dob: $dob)';
+    return 'ProfileModel(uid: $uid, email: $email, height: $height, weight: $weight, name: $name, photoUrl: $photoUrl, gender: $gender, waterEnable: $waterEnable, dob: $dob)';
   }
 
   @override
@@ -223,13 +255,16 @@ class _$_ProfileModel implements _ProfileModel {
             (identical(other.name, name) || other.name == name) &&
             (identical(other.photoUrl, photoUrl) ||
                 other.photoUrl == photoUrl) &&
+            (identical(other.gender, gender) || other.gender == gender) &&
+            (identical(other.waterEnable, waterEnable) ||
+                other.waterEnable == waterEnable) &&
             (identical(other.dob, dob) || other.dob == dob));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, uid, email, height, weight, name, photoUrl, dob);
+  int get hashCode => Object.hash(runtimeType, uid, email, height, weight, name,
+      photoUrl, gender, waterEnable, dob);
 
   @JsonKey(ignore: true)
   @override
@@ -253,6 +288,8 @@ abstract class _ProfileModel implements ProfileModel {
       final double? weight,
       final String? name,
       final String? photoUrl,
+      final String? gender,
+      final bool? waterEnable,
       @TimestampConverter() final DateTime? dob}) = _$_ProfileModel;
 
   factory _ProfileModel.fromJson(Map<String, dynamic> json) =
@@ -270,6 +307,10 @@ abstract class _ProfileModel implements ProfileModel {
   String? get name;
   @override
   String? get photoUrl;
+  @override
+  String? get gender;
+  @override
+  bool? get waterEnable;
   @override
   @TimestampConverter()
   DateTime? get dob;

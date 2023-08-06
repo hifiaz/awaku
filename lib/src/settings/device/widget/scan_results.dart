@@ -2,13 +2,14 @@ import 'package:awaku/service/ftms_service.dart';
 import 'package:awaku/src/bike/bike_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ftms/flutter_ftms.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ScanResults extends StatelessWidget {
+class ScanResults extends ConsumerWidget {
   final List<ScanResult> data;
   const ScanResults({super.key, required this.data});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Column(
       children: data
           .map(

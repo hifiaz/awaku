@@ -1,20 +1,28 @@
 import 'package:awaku/service/ftms_service.dart';
+import 'package:awaku/service/provider/health_provider.dart';
 import 'package:chart_sparkline/chart_sparkline.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_ftms/flutter_ftms.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:logger/logger.dart';
 
-class BikeView extends StatefulWidget {
+class BikeView extends ConsumerStatefulWidget {
   final BluetoothDevice ftmsDevice;
 
   const BikeView({Key? key, required this.ftmsDevice}) : super(key: key);
 
   @override
-  State<BikeView> createState() => _BikeViewState();
+  ConsumerState<BikeView> createState() => _BikeViewState();
 }
 
-class _BikeViewState extends State<BikeView> {
+class _BikeViewState extends ConsumerState<BikeView> {
+  DateTime start = DateTime.now();
+  DeviceDataParameterValue? totalDistance;
+  DeviceDataParameterValue? cal;
   List<double> data = [0.0];
+
   @override
   void initState() {
     super.initState();
@@ -38,7 +46,12 @@ class _BikeViewState extends State<BikeView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        leading: IconButton(
+          onPressed: () => showAlertDialog(context),
+          icon: const Icon(Icons.arrow_back_ios),
+        ),
+      ),
       body: StreamBuilder<DeviceData?>(
         stream: ftmsService.ftmsDeviceDataControllerStream,
         builder: (c, snapshot) {
@@ -47,15 +60,16 @@ class _BikeViewState extends State<BikeView> {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Center(child: Text("No FTMSData found!")),
-                ElevatedButton(
-                  onPressed: () async {
-                    await FTMS.useDeviceDataCharacteristic(widget.ftmsDevice,
-                        (DeviceData data) {
-                      ftmsService.ftmsDeviceDataControllerSink.add(data);
-                    });
-                  },
-                  child: const Text("Start"),
+                Center(
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      await FTMS.useDeviceDataCharacteristic(widget.ftmsDevice,
+                          (DeviceData data) {
+                        ftmsService.ftmsDeviceDataControllerSink.add(data);
+                      });
+                    },
+                    child: const Text("Start"),
+                  ),
                 ),
               ],
             );
@@ -77,6 +91,11 @@ class _BikeViewState extends State<BikeView> {
           final distance = snapshot.data!
               .getDeviceDataParameterValues()
               .firstWhere((element) => element.flag?.name == 'Total Distance');
+          final energy = snapshot.data!
+              .getDeviceDataParameterValues()
+              .firstWhere((element) => element.flag?.name == 'Expended Energy');
+          totalDistance = distance;
+          cal = energy;
           data.add(power.value.toDouble());
           return Padding(
             padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
@@ -96,6 +115,8 @@ class _BikeViewState extends State<BikeView> {
                           const SizedBox(width: 10),
                           Text('${distance.value} ${distance.unit}'),
                           const SizedBox(width: 10),
+                          Text('${energy.value} ${energy.unit}'),
+                          const SizedBox(width: 10),
                           Text('${speed.value / 100} ${speed.unit}'),
                         ],
                       ),
@@ -114,6 +135,15 @@ class _BikeViewState extends State<BikeView> {
                           ],
                         ),
                       ),
+                      // Column(
+                      //   crossAxisAlignment: CrossAxisAlignment.center,
+                      //   children: snapshot.data!
+                      //       .getDeviceDataParameterValues()
+                      //       .map((parameterValue) => Text(
+                      //             '${parameterValue.toString()} - ${parameterValue.flag?.name}',
+                      //           ))
+                      //       .toList(),
+                      // ),
                     ],
                   ),
                 ),
@@ -130,6 +160,57 @@ class _BikeViewState extends State<BikeView> {
           );
         },
       ),
+    );
+  }
+
+  showAlertDialog(BuildContext context) {
+    // set up the buttons
+    Widget cancelButton = TextButton(
+      child: const Text("Cancel"),
+      onPressed: () {
+        context.pop();
+      },
+    );
+
+    Widget exitButton = TextButton(
+      child: const Text("Exit"),
+      onPressed: () {
+        context.pop();
+        context.pop();
+      },
+    );
+    Widget continueButton = TextButton(
+      child: const Text("Exit & Save"),
+      onPressed: () async {
+        Logger().d(
+            'start $start end ${DateTime.now()} cal $cal distance $totalDistance');
+        await ref.read(healthProvider).addBike(
+            start: start,
+            end: DateTime.now(),
+            calories: cal!.value,
+            distance: totalDistance!.value);
+        if (context.mounted) {
+          context.pop();
+          context.pop();
+        }
+      },
+    );
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: const Text("Exit"),
+      content: const Text("Are you sure want to exit from this page?"),
+      actions: [
+        cancelButton,
+        exitButton,
+        continueButton,
+      ],
+    );
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
     );
   }
 }

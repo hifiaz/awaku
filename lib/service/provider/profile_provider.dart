@@ -26,13 +26,21 @@ class ProfileProvider extends StateNotifier<ProfileState> {
     String? url,
     String? name,
     DateTime? dob,
-    required double weight,
-    required int height,
+    String? gender,
+    bool? enableWater,
+    double? weight,
+    int? height,
   }) async {
     state = const ProfileStateLoading();
-    final response = await ref
-        .read(profileRepositoryProvider)
-        .update(uid, name: name, dob: dob, weight: weight, height: height);
+    final response = await ref.read(profileRepositoryProvider).update(
+          uid,
+          name: name,
+          dob: dob,
+          enableWater: enableWater,
+          gender: gender,
+          weight: weight,
+          height: height,
+        );
     state = response.fold(
       (l) => ProfileStateError(l.toString()),
       (r) => const ProfileStateSuccess(),

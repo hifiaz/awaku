@@ -18,13 +18,24 @@ class ProfileRepository {
     return _profileService.create(user: user);
   }
 
-  Future<Either<String, bool>> update(String uid,
-      {required double weight,
-      required int height,
-      String? name,
-      DateTime? dob}) async {
+  Future<Either<String, bool>> update(
+    String uid, {
+    double? weight,
+    int? height,
+    String? name,
+    String? gender,
+    DateTime? dob,
+    bool? enableWater,
+  }) async {
     return _profileService.update(
-        uid: uid, name: name, dob: dob, weight: weight, height: height);
+      uid: uid,
+      name: name,
+      dob: dob,
+      gender: gender,
+      weight: weight,
+      height: height,
+      enableWater: enableWater,
+    );
   }
 }
 

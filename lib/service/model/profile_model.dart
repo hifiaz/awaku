@@ -13,6 +13,8 @@ class ProfileModel with _$ProfileModel {
     double? weight,
     String? name,
     String? photoUrl,
+    String? gender,
+    bool? waterEnable,
     @TimestampConverter() DateTime? dob,
   }) = _ProfileModel;
 
