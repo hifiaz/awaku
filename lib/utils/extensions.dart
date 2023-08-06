@@ -1,34 +1,55 @@
 import 'dart:math';
 
+import 'package:intl/intl.dart';
+
 double calculateBodyMassIndex(double weight, int height) {
   double bmi = 0;
   bmi = (weight / pow(height / 100, 2));
   return bmi;
 }
 
+double totalWater(double? weight) {
+  return (0.03 * (weight ?? 0).toDouble());
+}
+
+final formateDate = DateFormat("yyyy-MM-dd");
+final formatWithTime12H = DateFormat('MMM d, h:mm a');
+
 double waterParser(int index) {
   switch (index) {
+    case 0:
+      return 50;
     case 1:
-      return 50.0;
+      return 100;
     case 2:
-      return 100.0;
+      return 150;
     case 3:
-      return 150.0;
+      return 200;
     case 4:
-      return 200.0;
+      return 250;
     case 5:
-      return 250.0;
+      return 400;
     case 6:
-      return 400.0;
+      return 500;
     case 7:
-      return 500.0;
+      return 600;
     case 8:
-      return 600.0;
+      return 800;
     case 9:
-      return 800.0;
-    case 10:
-      return 1000.0;
+      return 1000;
     default:
-      return 50.0;
+      return 50;
+  }
+}
+
+bool checkTypeData(String type) {
+  if (type == 'WATER') {
+    return true;
+  } else if (type == 'HEIGHT') {
+    return true;
+  } else if (type == 'WEIGHT') {
+    return true;
+  } else {
+    return false;
   }
 }

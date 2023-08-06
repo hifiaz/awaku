@@ -1,16 +1,15 @@
+import 'package:awaku/service/provider/health_provider.dart';
+import 'package:awaku/service/provider/profile_provider.dart';
+import 'package:awaku/service/provider/states/profile_states.dart';
+import 'package:awaku/utils/extensions.dart';
+import 'package:awaku/utils/validator.dart';
+import 'package:awaku/widgets/custom_button.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
-
-import 'package:awaku/service/provider/health_provider.dart';
-import 'package:awaku/service/provider/profile_provider.dart';
-import 'package:awaku/service/provider/states/profile_states.dart';
-import 'package:awaku/utils/validator.dart';
-import 'package:awaku/widgets/custom_button.dart';
 
 class ProfileView extends ConsumerStatefulWidget {
   const ProfileView({super.key});
@@ -133,7 +132,7 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                   child: Center(
                     child: ListTile(
                       title: Text(dob != null
-                          ? DateFormat("yyyy-MM-dd").format(dob!)
+                          ? formateDate.format(dob!)
                           : ''),
                       onTap: () => showBottom(),
                     ),

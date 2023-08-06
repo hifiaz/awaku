@@ -42,12 +42,13 @@ class _HomeViewState extends ConsumerState<HomeView> {
 
   @override
   Widget build(BuildContext context) {
-    final profile = ref.watch(fetchUserProvider);
+    final profile = ref.watch(fetchUserProvider).valueOrNull;
     final healthData = ref.watch(healthNotifierProvider);
     final devices = ref.watch(getDevicesProvider);
+    final water = ref.watch(currentHydrationProvider).valueOrNull;
     return Scaffold(
       appBar: AppBar(
-        title: Text('Hello ${profile.value?.name ?? ''}'),
+        title: Text('Hello ${profile?.name ?? ''}'),
         centerTitle: false,
         actions: [
           IconButton(
@@ -58,6 +59,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
       body: RefreshIndicator(
         onRefresh: () {
           ref.invalidate(getDevicesProvider);
+          ref.invalidate(healthNotifierProvider);
           return ref.read(fetchUserProvider.future);
         },
         child: SingleChildScrollView(
@@ -73,7 +75,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                       Row(
                         children: [
                           Text(
-                            _log.isEmpty ? '' : '${_log.last.heartRate}',
+                            _log.isEmpty ? '-' : '${_log.last.heartRate}',
                             style: Theme.of(context).textTheme.displaySmall,
                           ),
                           Column(
@@ -92,7 +94,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                     Row(
                       children: [
                         Text(
-                          '${profile.value?.weight ?? '0'}',
+                          '${profile?.weight ?? '0'}',
                           style: Theme.of(context).textTheme.displaySmall,
                         ),
                         Column(
@@ -111,8 +113,8 @@ class _HomeViewState extends ConsumerState<HomeView> {
                     Row(
                       children: [
                         Text(
-                          calculateBodyMassIndex(profile.value?.weight ?? 0,
-                                  profile.value?.height ?? 0)
+                          calculateBodyMassIndex(
+                                  profile?.weight ?? 0, profile?.height ?? 0)
                               .toStringAsFixed(1),
                           style: Theme.of(context).textTheme.displaySmall,
                         ),
@@ -171,7 +173,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                   child: Text('Loading...'),
                 ),
               ),
-              if (profile.value?.waterEnable ?? true)
+              if (profile?.waterEnable ?? true)
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Row(
@@ -180,11 +182,12 @@ class _HomeViewState extends ConsumerState<HomeView> {
                         width: 80.0,
                         height: 80.0,
                         child: LiquidCircularProgressIndicator(
-                          value: 20 / 100,
-                          backgroundColor: Colors.white,
+                          value: (water ?? 0) / 100,
+                          backgroundColor: Colors.blue[50],
                           valueColor: const AlwaysStoppedAnimation(Colors.blue),
                           center: Text(
-                            "${(20).round()}%",
+                            // "${(0).round()}%",
+                            "${(water ?? 0).round()}%",
                             style: const TextStyle(
                               color: Colors.lightBlueAccent,
                               fontSize: 20.0,
@@ -201,7 +204,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Drink minimum ${(20).toStringAsFixed(1)} L/day',
+                                'Drink minimum ${totalWater(profile?.weight).toStringAsFixed(1)} L/day',
                               ),
                               Text(
                                 'Tap to add Water',
@@ -218,8 +221,11 @@ class _HomeViewState extends ConsumerState<HomeView> {
                     ],
                   ),
                 ),
+              const SizedBox(height: 20),
               ListTile(
                 title: Text(AppLocalizations.of(context)!.history),
+                subtitle: const Text('Recorded to Health app'),
+                trailing: const Text('in 24 Hours'),
               ),
               healthData.when(
                 data: (data) {
@@ -236,9 +242,12 @@ class _HomeViewState extends ConsumerState<HomeView> {
                     itemBuilder: (_, index) {
                       HealthDataPoint p = data[index];
                       return ListTile(
-                        title: Text("${p.typeString}: ${p.value}"),
+                        title: Text(
+                            "${p.typeString}: ${double.parse(p.value.toString()).toStringAsFixed(2)}"),
                         trailing: Text(p.unitString),
-                        subtitle: Text('${p.dateFrom} - ${p.dateTo}'),
+                        subtitle: Text(checkTypeData(p.typeString)
+                            ? formatWithTime12H.format(p.dateTo)
+                            : '${formatWithTime12H.format(p.dateFrom)} - ${formatWithTime12H.format(p.dateTo)}'),
                       );
                     },
                   );
@@ -284,7 +293,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                     await ref
                         .read(healthProvider)
                         .addDataHealth(water: waterParser(_selectedWater));
-                    // ref.invalidate(waterNotifierProvider);
+                    ref.invalidate(currentHydrationProvider);
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                         content: Text('Successfully updated water!'),

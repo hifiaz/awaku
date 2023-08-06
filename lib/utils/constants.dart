@@ -5,7 +5,7 @@ const List<HealthDataType> dataTypes = [
   HealthDataType.WEIGHT,
   HealthDataType.WATER,
   HealthDataType.WORKOUT,
-  HealthDataType.EXERCISE_TIME
+  // HealthDataType.EXERCISE_TIME
 ];
 
 final List<String> waterNames = <String>[

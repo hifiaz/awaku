@@ -1,5 +1,7 @@
+import 'package:awaku/service/provider/profile_provider.dart';
 import 'package:awaku/utils/constants.dart';
 import 'package:health/health.dart';
+import 'package:logger/logger.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'health_provider.g.dart';
@@ -19,7 +21,8 @@ class HealthProvider {
 
   Future<bool> permission() async {
     var result = await health.hasPermissions(types);
-    if (result == null || result) {
+    Logger().d('permission $result');
+    if (result == true) {
       result = true;
     } else {
       result = false;
@@ -36,11 +39,17 @@ class HealthProvider {
     bool success = true;
     if (water != null) {
       success &= await health.writeHealthData(
-          water, HealthDataType.WATER, earlier, now);
+        water,
+        HealthDataType.WATER,
+        earlier,
+        now,
+        unit: HealthDataUnit.MILLILITER,
+      );
     }
     if (weight != null) {
       success &= await health.writeHealthData(
-          weight, HealthDataType.WEIGHT, earlier, now);
+          weight, HealthDataType.WEIGHT, earlier, now,
+          unit: HealthDataUnit.KILOGRAM);
     }
     return success;
   }
@@ -79,6 +88,12 @@ class HealthProvider {
     final yesterday = now.subtract(const Duration(hours: 24));
     return await health.getHealthDataFromTypes(yesterday, now, types);
   }
+
+  Future<List<HealthDataPoint>> getWater() async {
+    final yesterday = now.subtract(const Duration(hours: 24));
+    return await health
+        .getHealthDataFromTypes(yesterday, now, [HealthDataType.WATER]);
+  }
 }
 
 @riverpod
@@ -87,6 +102,19 @@ class HealthNotifier extends _$HealthNotifier {
   Future<List<HealthDataPoint>> build() async {
     return ref.read(healthProvider).getDataHealth();
   }
+}
+
+@riverpod
+Future<double?> currentHydration(CurrentHydrationRef ref) async {
+  final user = ref.watch(fetchUserProvider).valueOrNull;
+  final water = await ref.read(healthProvider).getWater();
+  double totalWater = 0.0;
+  for (var i in water) {
+    totalWater = totalWater + (double.parse(i.value.toString()) * 1000);
+  }
+  double total = (0.03 * (user?.weight ?? 0.1).toDouble()) * 1000;
+  double calculate = 100 - ((total - totalWater) / total) * 100;
+  return calculate;
 }
 
 @riverpod

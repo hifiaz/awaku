@@ -20,6 +20,21 @@ final healthProvider = AutoDisposeProvider<HealthProvider>.internal(
 );
 
 typedef HealthRef = AutoDisposeProviderRef<HealthProvider>;
+String _$currentHydrationHash() => r'6083787120278013a6d955f6b40361a5409deb69';
+
+/// See also [currentHydration].
+@ProviderFor(currentHydration)
+final currentHydrationProvider = AutoDisposeFutureProvider<double?>.internal(
+  currentHydration,
+  name: r'currentHydrationProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$currentHydrationHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef CurrentHydrationRef = AutoDisposeFutureProviderRef<double?>;
 String _$healthNotifierHash() => r'6d18c4552a056305472c364689a5a4d18a190e70';
 
 /// See also [HealthNotifier].
