@@ -71,39 +71,34 @@ class ScanResults extends ConsumerWidget {
                             },
                           );
                         case BluetoothConnectionState.connected:
-                          return SizedBox(
-                            width: 250,
-                            child: Wrap(
-                              spacing: 2,
-                              alignment: WrapAlignment.end,
-                              direction: Axis.horizontal,
-                              children: [
-                                FutureBuilder<bool>(
-                                  future: FTMS
-                                      .isBluetoothDeviceFTMSDevice(d.device),
-                                  initialData: false,
-                                  builder: (c, snapshot) => (snapshot.data ??
-                                          false)
-                                      ? ElevatedButton(
-                                          child: const Text("FTMS"),
-                                          onPressed: () => Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) => BikeView(
-                                                ftmsDevice: d.device,
+                          return Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              FutureBuilder<bool>(
+                                future:
+                                    FTMS.isBluetoothDeviceFTMSDevice(d.device),
+                                initialData: false,
+                                builder: (c, snapshot) =>
+                                    (snapshot.data ?? false)
+                                        ? ElevatedButton(
+                                            child: const Text("FTMS"),
+                                            onPressed: () => Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) => BikeView(
+                                                  ftmsDevice: d.device,
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                        )
-                                      : Container(),
-                                ),
-                                OutlinedButton(
-                                  child: const Text("Disconnect"),
-                                  onPressed: () =>
-                                      FTMS.disconnectFromFTMSDevice(d.device),
-                                )
-                              ],
-                            ),
+                                          )
+                                        : Container(),
+                              ),
+                              OutlinedButton(
+                                child: const Text("Disconnect"),
+                                onPressed: () =>
+                                    FTMS.disconnectFromFTMSDevice(d.device),
+                              )
+                            ],
                           );
                         default:
                           return Text(deviceState.name);

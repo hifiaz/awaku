@@ -1,6 +1,7 @@
 import 'package:awaku/service/model/heart_rate_model.dart';
 import 'package:awaku/service/model/profile_model.dart';
 import 'package:awaku/service/provider/devices_provider.dart';
+import 'package:awaku/service/provider/fasting_provider.dart';
 import 'package:awaku/service/provider/health_provider.dart';
 import 'package:awaku/service/provider/profile_provider.dart';
 import 'package:awaku/service/stop_watch_service.dart';
@@ -52,6 +53,8 @@ class _HomeViewState extends ConsumerState<HomeView> {
     final healthData = ref.watch(healthNotifierProvider);
     final devices = ref.watch(getDevicesProvider);
     final water = ref.watch(currentHydrationProvider).valueOrNull;
+    final start = ref.watch(startFastingProvider);
+    final fasting = ref.watch(selectedFastingProvider);
     return Scaffold(
       appBar: AppBar(
         title: Text('Hello ${profile?.name ?? ''}'),
@@ -255,7 +258,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                         ),
                         onTap: () => context.push('/fasting'),
                       ),
-                      if (stopWatchTimer.isRunning)
+                      if (start)
                         StreamBuilder<int>(
                           stream: stopWatchTimer.rawTime,
                           initialData: stopWatchTimer.rawTime.value,
@@ -285,16 +288,23 @@ class _HomeViewState extends ConsumerState<HomeView> {
                           backgroundColor: Colors.blue,
                           width: double.infinity,
                           isDisabled: false,
-                          title: stopWatchTimer.isRunning
-                              ? 'End fasting'
-                              : 'Start fasting',
+                          title: start ? 'End fasting' : 'Start fasting',
                           onPressed: () {
-                            if (stopWatchTimer.isRunning) {
-                              stopWatchTimer.onStopTimer();
+                            if (fasting == null) {
+                              context.push('/fasting');
                             } else {
-                              stopWatchTimer.onStartTimer();
+                              if (stopWatchTimer.isRunning) {
+                                _showEndDialog(context);
+                              } else {
+                                stopWatchTimer.clearPresetTime();
+                                stopWatchTimer
+                                    .setPresetHoursTime(fasting.start);
+                                stopWatchTimer.onStartTimer();
+                                ref
+                                    .read(startFastingProvider.notifier)
+                                    .set(true);
+                              }
                             }
-                            setState(() {});
                           },
                         ),
                       ),
@@ -419,7 +429,6 @@ class _HomeViewState extends ConsumerState<HomeView> {
   }
 
   TextEditingController weight = TextEditingController();
-  // This shows a CupertinoModalPopup which hosts a CupertinoAlertDialog.
   void _showWeightDialog(BuildContext context, ProfileModel? user) {
     showCupertinoModalPopup<void>(
       context: context,
@@ -465,6 +474,34 @@ class _HomeViewState extends ConsumerState<HomeView> {
               if (mounted) Navigator.pop(context);
             },
             child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showEndDialog(BuildContext context) {
+    showCupertinoModalPopup<void>(
+      context: context,
+      builder: (BuildContext context) => CupertinoAlertDialog(
+        title: const Text('Are you sure want to end fasting?'),
+        content: const Text('Time of fasting will saved at last ended time'),
+        actions: <CupertinoDialogAction>[
+          CupertinoDialogAction(
+            isDefaultAction: true,
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: const Text('Cancel'),
+          ),
+          CupertinoDialogAction(
+            isDestructiveAction: true,
+            onPressed: () async {
+              stopWatchTimer.onStopTimer();
+              ref.read(startFastingProvider.notifier).set(false);
+              if (mounted) Navigator.pop(context);
+            },
+            child: const Text('Yes'),
           ),
         ],
       ),
