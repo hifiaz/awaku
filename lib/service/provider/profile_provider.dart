@@ -28,6 +28,7 @@ class ProfileProvider extends StateNotifier<ProfileState> {
     DateTime? dob,
     String? gender,
     bool? enableWater,
+    bool? enableFasting,
     double? weight,
     int? height,
   }) async {
@@ -37,6 +38,7 @@ class ProfileProvider extends StateNotifier<ProfileState> {
           name: name,
           dob: dob,
           enableWater: enableWater,
+          enableFasting: enableFasting,
           gender: gender,
           weight: weight,
           height: height,

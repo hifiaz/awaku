@@ -20,7 +20,7 @@ final healthProvider = AutoDisposeProvider<HealthProvider>.internal(
 );
 
 typedef HealthRef = AutoDisposeProviderRef<HealthProvider>;
-String _$currentHydrationHash() => r'6083787120278013a6d955f6b40361a5409deb69';
+String _$currentHydrationHash() => r'2c96b54629a74c49eb07951fa68e9766ed2146d1';
 
 /// See also [currentHydration].
 @ProviderFor(currentHydration)

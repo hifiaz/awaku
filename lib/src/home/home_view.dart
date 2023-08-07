@@ -1,18 +1,24 @@
 import 'package:awaku/service/model/heart_rate_model.dart';
+import 'package:awaku/service/model/profile_model.dart';
 import 'package:awaku/service/provider/devices_provider.dart';
 import 'package:awaku/service/provider/health_provider.dart';
 import 'package:awaku/service/provider/profile_provider.dart';
+import 'package:awaku/service/stop_watch_service.dart';
 import 'package:awaku/src/bike/bike_view.dart';
 import 'package:awaku/utils/constants.dart';
 import 'package:awaku/utils/extensions.dart';
+import 'package:awaku/utils/validator.dart';
+import 'package:awaku/widgets/custom_button.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_ftms/flutter_ftms.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:health/health.dart';
 import 'package:liquid_progress_indicator/liquid_progress_indicator.dart';
+import 'package:stop_watch_timer/stop_watch_timer.dart';
 import 'package:watch_connectivity/watch_connectivity.dart';
 
 class HomeView extends ConsumerStatefulWidget {
@@ -91,24 +97,31 @@ class _HomeViewState extends ConsumerState<HomeView> {
                           ),
                         ],
                       ),
-                    Row(
-                      children: [
-                        Text(
-                          '${profile?.weight ?? '0'}',
-                          style: Theme.of(context).textTheme.displaySmall,
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Icon(Icons.monitor_weight_outlined,
-                                size: 20, color: Colors.green),
-                            Text(
-                              'KG',
-                              style: Theme.of(context).textTheme.bodySmall,
-                            )
-                          ],
-                        ),
-                      ],
+                    GestureDetector(
+                      onTap: () {
+                        weight = TextEditingController(
+                            text: '${profile?.weight ?? 0}');
+                        _showWeightDialog(context, profile);
+                      },
+                      child: Row(
+                        children: [
+                          Text(
+                            '${profile?.weight ?? '0'}',
+                            style: Theme.of(context).textTheme.displaySmall,
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Icon(Icons.monitor_weight_outlined,
+                                  size: 20, color: Colors.green),
+                              Text(
+                                'KG',
+                                style: Theme.of(context).textTheme.bodySmall,
+                              )
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                     Row(
                       children: [
@@ -121,7 +134,9 @@ class _HomeViewState extends ConsumerState<HomeView> {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            calculateBodyMassIndex(78, 168) >= 25
+                            calculateBodyMassIndex(profile?.weight ?? 0,
+                                        profile?.height ?? 0) >=
+                                    25
                                 ? const Icon(Icons.arrow_outward,
                                     size: 20, color: Colors.red)
                                 : const Icon(Icons.arrow_forward,
@@ -221,7 +236,74 @@ class _HomeViewState extends ConsumerState<HomeView> {
                     ],
                   ),
                 ),
-              const SizedBox(height: 20),
+              if (profile?.fastingEnable ?? true)
+                Container(
+                  margin: const EdgeInsets.all(16.0),
+                  decoration: BoxDecoration(
+                      color: Colors.blueGrey[50],
+                      borderRadius:
+                          const BorderRadius.all(Radius.circular(10))),
+                  child: Column(
+                    children: [
+                      ListTile(
+                        leading: const Icon(Icons.local_dining),
+                        title: Text('Eating periode',
+                            style: Theme.of(context).textTheme.titleLarge),
+                        trailing: const Icon(
+                          Icons.arrow_forward_ios_outlined,
+                          size: 15,
+                        ),
+                        onTap: () => context.push('/fasting'),
+                      ),
+                      if (stopWatchTimer.isRunning)
+                        StreamBuilder<int>(
+                          stream: stopWatchTimer.rawTime,
+                          initialData: stopWatchTimer.rawTime.value,
+                          builder: (context, snap) {
+                            final value = snap.data!;
+                            final displayTime = StopWatchTimer.getDisplayTime(
+                                value,
+                                hours: true);
+                            return Column(
+                              children: <Widget>[
+                                Padding(
+                                  padding: const EdgeInsets.all(8),
+                                  child: Text(
+                                    displayTime,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .displaySmall,
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        ),
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: CustomButton(
+                          backgroundColor: Colors.blue,
+                          width: double.infinity,
+                          isDisabled: false,
+                          title: stopWatchTimer.isRunning
+                              ? 'End fasting'
+                              : 'Start fasting',
+                          onPressed: () {
+                            if (stopWatchTimer.isRunning) {
+                              stopWatchTimer.onStopTimer();
+                            } else {
+                              stopWatchTimer.onStartTimer();
+                            }
+                            setState(() {});
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 10)
+                    ],
+                  ),
+                )
+              else
+                const SizedBox(height: 20),
               ListTile(
                 title: Text(AppLocalizations.of(context)!.history),
                 subtitle: const Text('Recorded to Health app'),
@@ -333,6 +415,59 @@ class _HomeViewState extends ConsumerState<HomeView> {
           ),
         );
       },
+    );
+  }
+
+  TextEditingController weight = TextEditingController();
+  // This shows a CupertinoModalPopup which hosts a CupertinoAlertDialog.
+  void _showWeightDialog(BuildContext context, ProfileModel? user) {
+    showCupertinoModalPopup<void>(
+      context: context,
+      builder: (BuildContext context) => CupertinoAlertDialog(
+        title: const Text('Change Weight'),
+        content: Column(
+          children: [
+            const SizedBox(height: 20),
+            Material(
+              child: TextFormField(
+                  controller: weight,
+                  validator: weightRequired,
+                  keyboardType: TextInputType.number,
+                  textAlign: TextAlign.center,
+                  inputFormatters: <TextInputFormatter>[
+                    FilteringTextInputFormatter.allow(
+                        RegExp(r'^\d*\.?\d{0,2}')),
+                  ],
+                  decoration: const InputDecoration(border: InputBorder.none)),
+            )
+          ],
+        ),
+        actions: <CupertinoDialogAction>[
+          CupertinoDialogAction(
+            isDefaultAction: true,
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: const Text('Cancel'),
+          ),
+          CupertinoDialogAction(
+            isDestructiveAction: true,
+            onPressed: () async {
+              ref.read(profileProvider.notifier).update(
+                    uid: user!.uid!,
+                    weight: double.parse(weight.text),
+                  );
+              await ref
+                  .read(healthProvider)
+                  .addWeightAndHeight(weight: double.parse(weight.text));
+              ref.invalidate(healthNotifierProvider);
+              ref.invalidate(fetchUserProvider);
+              if (mounted) Navigator.pop(context);
+            },
+            child: const Text('Save'),
+          ),
+        ],
+      ),
     );
   }
 }

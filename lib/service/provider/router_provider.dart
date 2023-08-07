@@ -1,6 +1,7 @@
 import 'package:awaku/service/provider/authentication_provider.dart';
 import 'package:awaku/service/provider/states/login_states.dart';
 import 'package:awaku/src/auth/login_view.dart';
+import 'package:awaku/src/fasting/fasting_view.dart';
 import 'package:awaku/src/home/home_view.dart';
 import 'package:awaku/src/settings/device/add_device_view.dart';
 import 'package:awaku/src/settings/profile/profile_page.dart';
@@ -62,6 +63,11 @@ class RouterNotifier extends ChangeNotifier {
           name: 'home',
           builder: (context, state) => const HomeView(),
           path: '/',
+        ),
+        GoRoute(
+          name: 'fasting',
+          builder: (context, state) => const FastingView(),
+          path: '/fasting',
         ),
         GoRoute(
           name: 'setting',

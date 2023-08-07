@@ -14,6 +14,8 @@ double totalWater(double? weight) {
 
 final formateDate = DateFormat("yyyy-MM-dd");
 final formatWithTime12H = DateFormat('MMM d, h:mm a');
+final formatDayTime = DateFormat('E, hh:mm a');
+final formatTime = DateFormat('hh:mm a');
 
 double waterParser(int index) {
   switch (index) {

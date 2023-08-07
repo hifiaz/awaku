@@ -7,6 +7,7 @@ import 'package:awaku/widgets/custom_button.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -131,9 +132,7 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                   ),
                   child: Center(
                     child: ListTile(
-                      title: Text(dob != null
-                          ? formateDate.format(dob!)
-                          : ''),
+                      title: Text(dob != null ? formateDate.format(dob!) : ''),
                       onTap: () => showBottom(),
                     ),
                   ),
@@ -155,6 +154,10 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                           TextFormField(
                             controller: height,
                             validator: heightRequired,
+                            keyboardType: TextInputType.number,
+                            inputFormatters: <TextInputFormatter>[
+                              FilteringTextInputFormatter.digitsOnly
+                            ],
                             decoration: InputDecoration(
                               fillColor: Colors.blueGrey[50],
                               filled: true,
@@ -181,6 +184,11 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                           TextFormField(
                             controller: weight,
                             validator: weightRequired,
+                            keyboardType: TextInputType.number,
+                            inputFormatters: <TextInputFormatter>[
+                              FilteringTextInputFormatter.allow(
+                                  RegExp(r'^\d*\.?\d{0,2}')),
+                            ],
                             decoration: InputDecoration(
                               fillColor: Colors.blueGrey[50],
                               filled: true,

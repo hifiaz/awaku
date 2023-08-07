@@ -1,0 +1,482 @@
+import 'package:awaku/service/model/fasting_model.dart';
+import 'package:awaku/src/home/home_view.dart';
+import 'package:awaku/utils/extensions.dart';
+import 'package:awaku/widgets/custom_button.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:stop_watch_timer/stop_watch_timer.dart';
+
+class FastingDetail extends StatefulWidget {
+  final FastingModel fasting;
+  const FastingDetail({
+    Key? key,
+    required this.fasting,
+  }) : super(key: key);
+
+  @override
+  State<FastingDetail> createState() => _FastingDetailState();
+}
+
+class _FastingDetailState extends State<FastingDetail> {
+  bool isShow = false;
+  DateTime start = DateTime.now();
+  DateTime end = DateTime.now();
+
+  @override
+  void initState() {
+    setEndTime(DateTime.now());
+    stopWatchTimer.rawTime.listen((value) =>
+        print('rawTime $value ${StopWatchTimer.getDisplayTime(value)}'));
+    stopWatchTimer.minuteTime.listen((value) => print('minuteTime $value'));
+    stopWatchTimer.secondTime.listen((value) => print('secondTime $value'));
+    stopWatchTimer.records.listen((value) => print('records $value'));
+    stopWatchTimer.fetchStopped.listen((value) => print('stopped from stream'));
+    stopWatchTimer.fetchEnded.listen((value) => print('ended from stream'));
+    super.initState();
+  }
+
+  void setEndTime(DateTime date) {
+    setState(() {
+      end = date.add(Duration(hours: widget.fasting.end));
+    });
+  }
+
+  final _isHours = true;
+
+  final _scrollController = ScrollController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Text(widget.fasting.title,
+                style: Theme.of(context).textTheme.displaySmall),
+            const Text('Fasting'),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                /// Display stop watch time
+                StreamBuilder<int>(
+                  stream: stopWatchTimer.rawTime,
+                  initialData: stopWatchTimer.rawTime.value,
+                  builder: (context, snap) {
+                    final value = snap.data!;
+                    final displayTime =
+                        StopWatchTimer.getDisplayTime(value, hours: _isHours);
+                    return Column(
+                      children: <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: Text(
+                            displayTime,
+                            style: const TextStyle(
+                                fontSize: 40,
+                                fontFamily: 'Helvetica',
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: Text(
+                            value.toString(),
+                            style: const TextStyle(
+                                fontSize: 16,
+                                fontFamily: 'Helvetica',
+                                fontWeight: FontWeight.w400),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+
+                /// Display every minute.
+                StreamBuilder<int>(
+                  stream: stopWatchTimer.minuteTime,
+                  initialData: stopWatchTimer.minuteTime.value,
+                  builder: (context, snap) {
+                    final value = snap.data;
+                    return Column(
+                      children: <Widget>[
+                        Padding(
+                            padding: const EdgeInsets.all(8),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: <Widget>[
+                                const Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 4),
+                                  child: Text(
+                                    'minute',
+                                    style: TextStyle(
+                                      fontSize: 17,
+                                      fontFamily: 'Helvetica',
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(horizontal: 4),
+                                  child: Text(
+                                    value.toString(),
+                                    style: const TextStyle(
+                                        fontSize: 30,
+                                        fontFamily: 'Helvetica',
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              ],
+                            )),
+                      ],
+                    );
+                  },
+                ),
+
+                /// Display every second.
+                StreamBuilder<int>(
+                  stream: stopWatchTimer.secondTime,
+                  initialData: stopWatchTimer.secondTime.value,
+                  builder: (context, snap) {
+                    final value = snap.data;
+                    return Column(
+                      children: <Widget>[
+                        Padding(
+                            padding: const EdgeInsets.all(8),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: <Widget>[
+                                const Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 4),
+                                  child: Text(
+                                    'second',
+                                    style: TextStyle(
+                                      fontSize: 17,
+                                      fontFamily: 'Helvetica',
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(horizontal: 4),
+                                  child: Text(
+                                    value.toString(),
+                                    style: const TextStyle(
+                                      fontSize: 30,
+                                      fontFamily: 'Helvetica',
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            )),
+                      ],
+                    );
+                  },
+                ),
+
+                /// Lap time.
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: SizedBox(
+                    height: 100,
+                    child: StreamBuilder<List<StopWatchRecord>>(
+                      stream: stopWatchTimer.records,
+                      initialData: stopWatchTimer.records.value,
+                      builder: (context, snap) {
+                        final value = snap.data!;
+                        if (value.isEmpty) {
+                          return const SizedBox();
+                        }
+                        Future.delayed(const Duration(milliseconds: 100), () {
+                          _scrollController.animateTo(
+                              _scrollController.position.maxScrollExtent,
+                              duration: const Duration(milliseconds: 200),
+                              curve: Curves.easeOut);
+                        });
+                        print('Listen records. $value');
+                        return ListView.builder(
+                          controller: _scrollController,
+                          scrollDirection: Axis.vertical,
+                          itemBuilder: (BuildContext context, int index) {
+                            final data = value[index];
+                            return Column(
+                              children: <Widget>[
+                                Padding(
+                                  padding: const EdgeInsets.all(8),
+                                  child: Text(
+                                    '${index + 1} ${data.displayTime}',
+                                    style: const TextStyle(
+                                        fontSize: 17,
+                                        fontFamily: 'Helvetica',
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                                const Divider(
+                                  height: 1,
+                                )
+                              ],
+                            );
+                          },
+                          itemCount: value.length,
+                        );
+                      },
+                    ),
+                  ),
+                ),
+
+                /// Button
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Flexible(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 4),
+                          child: TextButton(
+                            onPressed: stopWatchTimer.onStartTimer,
+                            child: const Text(
+                              'Start',
+                            ),
+                          ),
+                        ),
+                      ),
+                      Flexible(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 4),
+                          child: TextButton(
+                            onPressed: stopWatchTimer.onStopTimer,
+                            child: const Text(
+                              'Stop',
+                            ),
+                          ),
+                        ),
+                      ),
+                      Flexible(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 4),
+                          child: TextButton(
+                            onPressed: stopWatchTimer.onResetTimer,
+                            child: const Text(
+                              'Reset',
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Flexible(
+                        child: Padding(
+                          padding: const EdgeInsets.all(0).copyWith(right: 8),
+                          child: TextButton(
+                            onPressed: stopWatchTimer.onAddLap,
+                            child: const Text(
+                              'Lap',
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Flexible(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        child: TextButton(
+                          onPressed: () {
+                            stopWatchTimer.setPresetHoursTime(1);
+                          },
+                          child: const Text(
+                            'Set Hours',
+                          ),
+                        ),
+                      ),
+                    ),
+                    Flexible(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        child: TextButton(
+                          onPressed: () {
+                            stopWatchTimer.setPresetMinuteTime(59);
+                          },
+                          child: const Text(
+                            'Set Minute',
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Flexible(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        child: TextButton(
+                          onPressed: () {
+                            stopWatchTimer.setPresetSecondTime(10);
+                          },
+                          child: const Text(
+                            'Set +Second',
+                          ),
+                        ),
+                      ),
+                    ),
+                    Flexible(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        child: TextButton(
+                          onPressed: () {
+                            stopWatchTimer.setPresetSecondTime(-10);
+                          },
+                          child: const Text(
+                            'Set -Second',
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  child: TextButton(
+                    onPressed: stopWatchTimer.clearPresetTime,
+                    child: const Text(
+                      'Clear PresetTime',
+                    ),
+                  ),
+                ),
+              ],
+            ),
+
+            // if (isShow) ...[
+            //   Column(
+            //     children: [
+            //       const Text('End (expected)'),
+            //       Text(formatTime.format(end)),
+            //     ],
+            //   ),
+            //   Padding(
+            //     padding: const EdgeInsets.all(16.0),
+            //     child: CustomButton(
+            //       backgroundColor: Colors.blue,
+            //       width: double.infinity,
+            //       isDisabled: false,
+            //       title: controllerTimer.isStarted
+            //           ? 'End fasting'
+            //           : 'Start fasting',
+            //       onPressed: () {
+            //         if (controllerTimer.isStarted) {
+            //           controllerTimer.reset();
+            //           setState(() {
+            //             isShow = false;
+            //           });
+            //         } else {
+            //           controllerTimer.start();
+            //         }
+            //         setState(() {});
+            //       },
+            //     ),
+            //   ),
+            // ] else ...[
+            //   ListTile(
+            //     minLeadingWidth: 10,
+            //     leading: const Icon(
+            //       Icons.circle,
+            //       size: 15,
+            //       color: Colors.green,
+            //     ),
+            //     title: const Text('Start'),
+            //     subtitle: Text(formatDayTime.format(start)),
+            //     trailing: const Icon(Icons.edit),
+            //     onTap: showTimePicker,
+            //   ),
+            //   ListTile(
+            //     minLeadingWidth: 10,
+            //     leading: const Icon(
+            //       Icons.circle,
+            //       size: 15,
+            //       color: Colors.red,
+            //     ),
+            //     title: const Text('End (expected)'),
+            //     subtitle: Text(formatDayTime.format(end)),
+            //   ),
+            //   Padding(
+            //     padding: const EdgeInsets.all(16.0),
+            //     child: CustomButton(
+            //         backgroundColor: Colors.blue,
+            //         width: double.infinity,
+            //         isDisabled: false,
+            //         title: 'Confirm',
+            //         onPressed: () {
+            //           setState(() {
+            //             isShow = true;
+            //           });
+            //         }),
+            //   ),
+            // ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  void showTimePicker() {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          height: 250,
+          decoration: BoxDecoration(
+              color: Colors.blueGrey[50],
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(5.0),
+                topRight: Radius.circular(5.0),
+              )),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: () => context.pop(),
+                  child: const Text('Done'),
+                ),
+              ),
+              SizedBox(
+                height: 200,
+                child: CupertinoDatePicker(
+                  mode: CupertinoDatePickerMode.time,
+                  initialDateTime: start,
+                  maximumDate: DateTime.now(),
+                  onDateTimeChanged: (DateTime newDateTime) {
+                    setState(() {
+                      start = newDateTime;
+                      setEndTime(newDateTime);
+                    });
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}

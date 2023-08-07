@@ -28,6 +28,7 @@ mixin _$ProfileModel {
   String? get photoUrl => throw _privateConstructorUsedError;
   String? get gender => throw _privateConstructorUsedError;
   bool? get waterEnable => throw _privateConstructorUsedError;
+  bool? get fastingEnable => throw _privateConstructorUsedError;
   @TimestampConverter()
   DateTime? get dob => throw _privateConstructorUsedError;
 
@@ -52,6 +53,7 @@ abstract class $ProfileModelCopyWith<$Res> {
       String? photoUrl,
       String? gender,
       bool? waterEnable,
+      bool? fastingEnable,
       @TimestampConverter() DateTime? dob});
 }
 
@@ -76,6 +78,7 @@ class _$ProfileModelCopyWithImpl<$Res, $Val extends ProfileModel>
     Object? photoUrl = freezed,
     Object? gender = freezed,
     Object? waterEnable = freezed,
+    Object? fastingEnable = freezed,
     Object? dob = freezed,
   }) {
     return _then(_value.copyWith(
@@ -111,6 +114,10 @@ class _$ProfileModelCopyWithImpl<$Res, $Val extends ProfileModel>
           ? _value.waterEnable
           : waterEnable // ignore: cast_nullable_to_non_nullable
               as bool?,
+      fastingEnable: freezed == fastingEnable
+          ? _value.fastingEnable
+          : fastingEnable // ignore: cast_nullable_to_non_nullable
+              as bool?,
       dob: freezed == dob
           ? _value.dob
           : dob // ignore: cast_nullable_to_non_nullable
@@ -136,6 +143,7 @@ abstract class _$$_ProfileModelCopyWith<$Res>
       String? photoUrl,
       String? gender,
       bool? waterEnable,
+      bool? fastingEnable,
       @TimestampConverter() DateTime? dob});
 }
 
@@ -158,6 +166,7 @@ class __$$_ProfileModelCopyWithImpl<$Res>
     Object? photoUrl = freezed,
     Object? gender = freezed,
     Object? waterEnable = freezed,
+    Object? fastingEnable = freezed,
     Object? dob = freezed,
   }) {
     return _then(_$_ProfileModel(
@@ -193,6 +202,10 @@ class __$$_ProfileModelCopyWithImpl<$Res>
           ? _value.waterEnable
           : waterEnable // ignore: cast_nullable_to_non_nullable
               as bool?,
+      fastingEnable: freezed == fastingEnable
+          ? _value.fastingEnable
+          : fastingEnable // ignore: cast_nullable_to_non_nullable
+              as bool?,
       dob: freezed == dob
           ? _value.dob
           : dob // ignore: cast_nullable_to_non_nullable
@@ -213,6 +226,7 @@ class _$_ProfileModel implements _ProfileModel {
       this.photoUrl,
       this.gender,
       this.waterEnable,
+      this.fastingEnable,
       @TimestampConverter() this.dob});
 
   factory _$_ProfileModel.fromJson(Map<String, dynamic> json) =>
@@ -235,12 +249,14 @@ class _$_ProfileModel implements _ProfileModel {
   @override
   final bool? waterEnable;
   @override
+  final bool? fastingEnable;
+  @override
   @TimestampConverter()
   final DateTime? dob;
 
   @override
   String toString() {
-    return 'ProfileModel(uid: $uid, email: $email, height: $height, weight: $weight, name: $name, photoUrl: $photoUrl, gender: $gender, waterEnable: $waterEnable, dob: $dob)';
+    return 'ProfileModel(uid: $uid, email: $email, height: $height, weight: $weight, name: $name, photoUrl: $photoUrl, gender: $gender, waterEnable: $waterEnable, fastingEnable: $fastingEnable, dob: $dob)';
   }
 
   @override
@@ -258,13 +274,15 @@ class _$_ProfileModel implements _ProfileModel {
             (identical(other.gender, gender) || other.gender == gender) &&
             (identical(other.waterEnable, waterEnable) ||
                 other.waterEnable == waterEnable) &&
+            (identical(other.fastingEnable, fastingEnable) ||
+                other.fastingEnable == fastingEnable) &&
             (identical(other.dob, dob) || other.dob == dob));
   }
 
   @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(runtimeType, uid, email, height, weight, name,
-      photoUrl, gender, waterEnable, dob);
+      photoUrl, gender, waterEnable, fastingEnable, dob);
 
   @JsonKey(ignore: true)
   @override
@@ -290,6 +308,7 @@ abstract class _ProfileModel implements ProfileModel {
       final String? photoUrl,
       final String? gender,
       final bool? waterEnable,
+      final bool? fastingEnable,
       @TimestampConverter() final DateTime? dob}) = _$_ProfileModel;
 
   factory _ProfileModel.fromJson(Map<String, dynamic> json) =
@@ -311,6 +330,8 @@ abstract class _ProfileModel implements ProfileModel {
   String? get gender;
   @override
   bool? get waterEnable;
+  @override
+  bool? get fastingEnable;
   @override
   @TimestampConverter()
   DateTime? get dob;

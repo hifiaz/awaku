@@ -38,6 +38,7 @@ dependencies:
   liquid_progress_indicator:
     git:
      url: https://github.com/Jollastro/liquid_progress_indicator.git
+  stop_watch_timer: ^3.0.1
 
 dev_dependencies:
   flutter_test:

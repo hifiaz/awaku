@@ -43,6 +43,7 @@ class ProfileService {
     String? gender,
     DateTime? dob,
     bool? enableWater,
+    bool? enableFasting,
     double? weight,
     int? height,
   }) async {
@@ -55,6 +56,7 @@ class ProfileService {
         'dob': dob,
         'gender': gender,
         'waterEnable': enableWater,
+        'enableFasting': enableFasting,
       };
       params.removeWhere((key, value) => value == null);
       await _firebaseStore.collection('user').doc(uid).update(params);

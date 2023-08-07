@@ -836,6 +836,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.7.2+1"
+  stop_watch_timer:
+    dependency: "direct main"
+    description:
+      name: stop_watch_timer
+      sha256: "3fe040c5bf04004f6d21a454a859e90b0d3e2323d24d2d9e80d5d9df9ff614cc"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.1"
   stream_channel:
     dependency: transitive
     description:

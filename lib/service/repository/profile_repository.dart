@@ -26,6 +26,7 @@ class ProfileRepository {
     String? gender,
     DateTime? dob,
     bool? enableWater,
+    bool? enableFasting,
   }) async {
     return _profileService.update(
       uid: uid,
@@ -35,6 +36,7 @@ class ProfileRepository {
       weight: weight,
       height: height,
       enableWater: enableWater,
+      enableFasting: enableFasting,
     );
   }
 }

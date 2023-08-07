@@ -18,6 +18,7 @@ class SettingsView extends ConsumerStatefulWidget {
 
 class _SettingsViewState extends ConsumerState<SettingsView> {
   bool enableWater = true;
+  bool enableFasting = true;
   @override
   void initState() {
     initialData();
@@ -28,6 +29,7 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
     final profile = ref.read(fetchUserProvider);
     if (profile.hasValue) {
       enableWater = profile.value?.waterEnable ?? true;
+      enableFasting = profile.value?.fastingEnable ?? true;
     }
   }
 
@@ -72,7 +74,15 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
             ListTile(
               leading: const Icon(Icons.local_dining),
               title: Text(AppLocalizations.of(context)!.intermittentFasting),
-              trailing: Switch(value: false, onChanged: (val) {}),
+              trailing: Switch(
+                  value: enableFasting,
+                  onChanged: (val) {
+                    setState(() => enableFasting = !enableFasting);
+                    ref.read(profileProvider.notifier).update(
+                          uid: user.value!.uid!,
+                          enableFasting: val,
+                        );
+                  }),
             ),
             ListTile(
               leading: const Icon(Icons.local_drink),

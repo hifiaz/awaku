@@ -15,6 +15,7 @@ class ProfileModel with _$ProfileModel {
     String? photoUrl,
     String? gender,
     bool? waterEnable,
+    bool? fastingEnable,
     @TimestampConverter() DateTime? dob,
   }) = _ProfileModel;
 
