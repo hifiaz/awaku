@@ -3,6 +3,7 @@ import 'package:awaku/service/provider/firebase_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:logger/logger.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'profile_service.g.dart';
@@ -59,6 +60,7 @@ class ProfileService {
         'enableFasting': enableFasting,
       };
       params.removeWhere((key, value) => value == null);
+      Logger().d('data $params');
       await _firebaseStore.collection('user').doc(uid).update(params);
       return right(true);
     } on FirebaseAuthException catch (e) {

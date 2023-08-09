@@ -45,34 +45,39 @@ class ScanResults extends ConsumerWidget {
                       var deviceState = snapshot.data!;
                       switch (deviceState) {
                         case BluetoothConnectionState.disconnected:
-                          return ElevatedButton(
-                            child: const Text("Connect"),
-                            onPressed: () async {
-                              final snackBar = SnackBar(
-                                content: Text(
-                                    'Connecting to ${d.device.localName}...'),
-                                duration: const Duration(seconds: 2),
-                              );
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(snackBar);
+                          return Padding(
+                            padding: const EdgeInsets.only(left: 16.0),
+                            child: ElevatedButton(
+                              child: const Text("Connect"),
+                              onPressed: () async {
+                                final snackBar = SnackBar(
+                                  content: Text(
+                                      'Connecting to ${d.device.localName}...'),
+                                  duration: const Duration(seconds: 2),
+                                );
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(snackBar);
 
-                              await FTMS.connectToFTMSDevice(d.device);
-                              d.device.connectionState.listen((state) async {
-                                if (state ==
-                                        BluetoothConnectionState.disconnected ||
-                                    state ==
-                                        BluetoothConnectionState
-                                            .disconnecting) {
-                                  ftmsService.ftmsDeviceDataControllerSink
-                                      .add(null);
-                                  return;
-                                }
-                              });
-                            },
+                                await FTMS.connectToFTMSDevice(d.device);
+                                d.device.connectionState.listen((state) async {
+                                  if (state ==
+                                          BluetoothConnectionState
+                                              .disconnected ||
+                                      state ==
+                                          BluetoothConnectionState
+                                              .disconnecting) {
+                                    ftmsService.ftmsDeviceDataControllerSink
+                                        .add(null);
+                                    return;
+                                  }
+                                });
+                              },
+                            ),
                           );
                         case BluetoothConnectionState.connected:
                           return Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               FutureBuilder<bool>(
                                 future:

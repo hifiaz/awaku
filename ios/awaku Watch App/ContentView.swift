@@ -10,7 +10,8 @@ import WatchConnectivity
 import HealthKit
 
 struct ContentView: View {
-    @ObservedObject var session = WatchSessionDelegate()
+//    @ObservedObject var session = WatchSessionDelegate()
+    private let session = WCSession.default
     @State var count = 0
     
     private var healthStore = HKHealthStore()
@@ -113,7 +114,7 @@ struct ContentView: View {
             }
             self.value = Int(lastHeartRate)
         }
-        session.updateApplicationContext(["heart_rate": lastHeartRate])
+        try? session.updateApplicationContext(["heart_rate": lastHeartRate])
     }
 }
 

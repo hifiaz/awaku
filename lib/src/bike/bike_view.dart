@@ -135,15 +135,15 @@ class _BikeViewState extends ConsumerState<BikeView> {
                           ],
                         ),
                       ),
-                      // Column(
-                      //   crossAxisAlignment: CrossAxisAlignment.center,
-                      //   children: snapshot.data!
-                      //       .getDeviceDataParameterValues()
-                      //       .map((parameterValue) => Text(
-                      //             '${parameterValue.toString()} - ${parameterValue.flag?.name}',
-                      //           ))
-                      //       .toList(),
-                      // ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: snapshot.data!
+                            .getDeviceDataParameterValues()
+                            .map((parameterValue) => Text(
+                                  '${parameterValue.toString()} - ${parameterValue.flag?.name}',
+                                ))
+                            .toList(),
+                      ),
                     ],
                   ),
                 ),

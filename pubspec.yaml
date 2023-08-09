@@ -39,6 +39,8 @@ dependencies:
     git:
      url: https://github.com/Jollastro/liquid_progress_indicator.git
   stop_watch_timer: ^3.0.1
+  flutter_local_notifications: ^16.0.0-dev.1
+  firebase_messaging: ^14.6.5
 
 dev_dependencies:
   flutter_test:

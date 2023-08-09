@@ -29,7 +29,7 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
     final profile = ref.read(fetchUserProvider);
     if (profile.hasValue) {
       enableWater = profile.value?.waterEnable ?? true;
-      enableFasting = profile.value?.fastingEnable ?? true;
+      enableFasting = profile.value?.enableFasting ?? true;
     }
   }
 

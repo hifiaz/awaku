@@ -16,7 +16,7 @@ _$_ProfileModel _$$_ProfileModelFromJson(Map<String, dynamic> json) =>
       photoUrl: json['photoUrl'] as String?,
       gender: json['gender'] as String?,
       waterEnable: json['waterEnable'] as bool?,
-      fastingEnable: json['fastingEnable'] as bool?,
+      enableFasting: json['enableFasting'] as bool?,
       dob: _$JsonConverterFromJson<Timestamp, DateTime>(
           json['dob'], const TimestampConverter().fromJson),
     );
@@ -31,7 +31,7 @@ Map<String, dynamic> _$$_ProfileModelToJson(_$_ProfileModel instance) =>
       'photoUrl': instance.photoUrl,
       'gender': instance.gender,
       'waterEnable': instance.waterEnable,
-      'fastingEnable': instance.fastingEnable,
+      'enableFasting': instance.enableFasting,
       'dob': _$JsonConverterToJson<Timestamp, DateTime>(
           instance.dob, const TimestampConverter().toJson),
     };

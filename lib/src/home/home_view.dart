@@ -1,3 +1,4 @@
+import 'package:awaku/service/model/fasting_model.dart';
 import 'package:awaku/service/model/heart_rate_model.dart';
 import 'package:awaku/service/model/profile_model.dart';
 import 'package:awaku/service/provider/devices_provider.dart';
@@ -19,6 +20,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:health/health.dart';
 import 'package:liquid_progress_indicator/liquid_progress_indicator.dart';
+import 'package:logger/logger.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 import 'package:watch_connectivity/watch_connectivity.dart';
 
@@ -239,7 +241,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                     ],
                   ),
                 ),
-              if (profile?.fastingEnable ?? true)
+              if (profile?.enableFasting ?? true)
                 Container(
                   margin: const EdgeInsets.all(16.0),
                   decoration: BoxDecoration(
@@ -294,7 +296,14 @@ class _HomeViewState extends ConsumerState<HomeView> {
                               context.push('/fasting');
                             } else {
                               if (stopWatchTimer.isRunning) {
-                                _showEndDialog(context);
+                                Logger().d(
+                                    'message ${stopWatchTimer.minuteTime.value}');
+                                _showEndDialog(
+                                    context,
+                                    fasting.copyWith(
+                                        uid: profile!.uid,
+                                        minuteLeft:
+                                            stopWatchTimer.minuteTime.value));
                               } else {
                                 stopWatchTimer.clearPresetTime();
                                 stopWatchTimer
@@ -334,9 +343,11 @@ class _HomeViewState extends ConsumerState<HomeView> {
                     itemBuilder: (_, index) {
                       HealthDataPoint p = data[index];
                       return ListTile(
-                        title: Text(
-                            "${p.typeString}: ${double.parse(p.value.toString()).toStringAsFixed(2)}"),
-                        trailing: Text(p.unitString),
+                        title:
+                            Text("${p.typeString}: ${dataHealthConverter(p)}"),
+                        trailing: Text(p.type == HealthDataType.WORKOUT
+                            ? ''
+                            : p.unitString),
                         subtitle: Text(checkTypeData(p.typeString)
                             ? formatWithTime12H.format(p.dateTo)
                             : '${formatWithTime12H.format(p.dateFrom)} - ${formatWithTime12H.format(p.dateTo)}'),
@@ -480,7 +491,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
     );
   }
 
-  void _showEndDialog(BuildContext context) {
+  void _showEndDialog(BuildContext context, FastingModel fasting) {
     showCupertinoModalPopup<void>(
       context: context,
       builder: (BuildContext context) => CupertinoAlertDialog(
@@ -499,6 +510,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
             onPressed: () async {
               stopWatchTimer.onStopTimer();
               ref.read(startFastingProvider.notifier).set(false);
+              ref.read(fastingProvider.notifier).create(fasting);
               if (mounted) Navigator.pop(context);
             },
             child: const Text('Yes'),

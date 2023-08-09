@@ -1,5 +1,8 @@
+import 'dart:convert';
 import 'dart:math';
 
+import 'package:awaku/service/model/workout_model.dart';
+import 'package:health/health.dart';
 import 'package:intl/intl.dart';
 
 double calculateBodyMassIndex(double weight, int height) {
@@ -42,6 +45,14 @@ double waterParser(int index) {
     default:
       return 50;
   }
+}
+
+String dataHealthConverter(HealthDataPoint data) {
+  if (data.type == HealthDataType.WORKOUT) {
+    WorkoutModel result = WorkoutModel.fromJson(jsonEncode(data.value));
+    return '${result.workoutActivityType}, ${result.totalDistance ?? 0} ${result.totalDistanceUnit}';
+  }
+  return '${data.value}';
 }
 
 bool checkTypeData(String type) {

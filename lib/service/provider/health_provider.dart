@@ -20,7 +20,8 @@ class HealthProvider {
   }
 
   Future<bool> permission() async {
-    var result = await health.hasPermissions(types);
+    final permissions = types.map((e) => HealthDataAccess.READ_WRITE).toList();
+    var result = await health.hasPermissions(types, permissions: permissions);
     Logger().d('permission $result');
     if (result == true) {
       result = true;
