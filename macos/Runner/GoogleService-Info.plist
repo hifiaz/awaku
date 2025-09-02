@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>782366684829-42uv7vbcs6v31uolgv4gdhla4oi8g1kk.apps.googleusercontent.com</string>
+	<string>782366684829-u1tj5339l8ch9fii850majj7l13rjtke.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.782366684829-42uv7vbcs6v31uolgv4gdhla4oi8g1kk</string>
+	<string>com.googleusercontent.apps.782366684829-u1tj5339l8ch9fii850majj7l13rjtke</string>
 	<key>API_KEY</key>
 	<string>AIzaSyBtoerQONkcU1APtYG5HlS29dE-D2hyZGA</string>
 	<key>GCM_SENDER_ID</key>
@@ -13,11 +13,11 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.example.awaku.RunnerTests</string>
+	<string>com.example.awaku</string>
 	<key>PROJECT_ID</key>
 	<string>awaku-3794c</string>
 	<key>STORAGE_BUCKET</key>
-	<string>awaku-3794c.appspot.com</string>
+	<string>awaku-3794c.firebasestorage.app</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -29,6 +29,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:782366684829:ios:f478c64640e4901ac58674</string>
+	<string>1:782366684829:ios:6c8a708dff48c68fc58674</string>
 </dict>
 </plist>

@@ -22,9 +22,9 @@ class ScanResults extends ConsumerWidget {
                     initialData: false,
                     builder: (c, snapshot) {
                       return Text(
-                        d.device.localName.isEmpty
+                        d.device.platformName.isEmpty
                             ? "(unknown device)"
-                            : d.device.localName,
+                            : d.device.platformName,
                       );
                     },
                   ),
@@ -52,7 +52,7 @@ class ScanResults extends ConsumerWidget {
                               onPressed: () async {
                                 final snackBar = SnackBar(
                                   content: Text(
-                                      'Connecting to ${d.device.localName}...'),
+                                      'Connecting to ${d.device.platformName}...'),
                                   duration: const Duration(seconds: 2),
                                 );
                                 ScaffoldMessenger.of(context)
@@ -62,10 +62,8 @@ class ScanResults extends ConsumerWidget {
                                 d.device.connectionState.listen((state) async {
                                   if (state ==
                                           BluetoothConnectionState
-                                              .disconnected ||
-                                      state ==
-                                          BluetoothConnectionState
-                                              .disconnecting) {
+                                              .disconnected) {
+                                    // Note: disconnecting state is deprecated and not streamed on Android & iOS
                                     ftmsService.ftmsDeviceDataControllerSink
                                         .add(null);
                                     return;

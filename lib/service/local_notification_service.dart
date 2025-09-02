@@ -15,8 +15,6 @@ class LocalNotificationService {
       requestAlertPermission: false,
       requestBadgePermission: false,
       requestSoundPermission: false,
-      onDidReceiveLocalNotification:
-          (int id, String? title, String? body, String? payload) async {},
     );
     // Initialization setting for android
     InitializationSettings initializationSettingsAndroid =
@@ -71,14 +69,18 @@ class LocalNotificationService {
       if (message.notification != null) {
         Logger().d(
             'Message also contained a notification: so it will pop up ${message.notification?.body}');
-        showDialog(
-            context: context,
-            // context: navigatorKey!.currentContext!,
-            builder: ((BuildContext context) {
-              return DynamicDialog(
-                  title: message.notification?.title,
-                  body: message.notification?.body);
-            }));
+        // Use a callback to avoid BuildContext usage across async gaps
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (context.mounted) {
+            showDialog(
+                context: context,
+                builder: ((BuildContext dialogContext) {
+                  return DynamicDialog(
+                      title: message.notification?.title,
+                      body: message.notification?.body);
+                }));
+          }
+        });
       }
     });
   }

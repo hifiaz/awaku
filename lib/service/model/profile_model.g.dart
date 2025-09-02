@@ -6,11 +6,11 @@ part of 'profile_model.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$_ProfileModel _$$_ProfileModelFromJson(Map<String, dynamic> json) =>
-    _$_ProfileModel(
+_ProfileModel _$ProfileModelFromJson(Map<String, dynamic> json) =>
+    _ProfileModel(
       uid: json['uid'] as String?,
       email: json['email'] as String?,
-      height: json['height'] as int?,
+      height: (json['height'] as num?)?.toInt(),
       weight: (json['weight'] as num?)?.toDouble(),
       name: json['name'] as String?,
       photoUrl: json['photoUrl'] as String?,
@@ -21,7 +21,7 @@ _$_ProfileModel _$$_ProfileModelFromJson(Map<String, dynamic> json) =>
           json['dob'], const TimestampConverter().fromJson),
     );
 
-Map<String, dynamic> _$$_ProfileModelToJson(_$_ProfileModel instance) =>
+Map<String, dynamic> _$ProfileModelToJson(_ProfileModel instance) =>
     <String, dynamic>{
       'uid': instance.uid,
       'email': instance.email,

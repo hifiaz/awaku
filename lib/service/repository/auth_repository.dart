@@ -7,12 +7,15 @@ class AuthRepository {
   final AuthService _authService;
   AuthRepository(this._authService);
 
-  Future<Either<String, User?>> login(String email, String password) {
-    return _authService.login(email: email, password: password);
+  // Removed email/password authentication methods
+  // Only Google and Apple Sign-In are supported now
+
+  Future<Either<String, User?>> signInWithGoogle() {
+    return _authService.signInWithGoogle();
   }
 
-  Future<Either<String, User>> register(String email, String password) async {
-    return _authService.signup(email: email, password: password);
+  Future<Either<String, User?>> signInWithApple() {
+    return _authService.signInWithApple();
   }
 
   Future<void> signout() async {

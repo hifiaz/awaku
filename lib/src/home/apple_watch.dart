@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:watch_connectivity/watch_connectivity.dart';
 
 class AppleWatch extends StatefulWidget {
-  const AppleWatch({Key? key}) : super(key: key);
+  const AppleWatch({super.key});
   static const routeName = '/apple_watch';
   @override
   State<AppleWatch> createState() => _AppleWatchState();
@@ -92,10 +92,11 @@ class _AppleWatchState extends State<AppleWatch> {
                   ),
                 ),
                 const SizedBox(width: 16),
-                TextButton(
-                  onPressed: _watch.startWatchApp,
-                  child: const Text('Start watch app'),
-                ),
+                // Note: startWatchApp method is not available in watch_connectivity package
+                // TextButton(
+                //   onPressed: _watch.startWatchApp,
+                //   child: const Text('Start watch app'),
+                // ),
                 const SizedBox(width: 16),
                 const Text('Log'),
                 ..._log.reversed.map(Text.new),

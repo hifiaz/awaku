@@ -33,15 +33,37 @@ double waterParser(int index) {
     case 4:
       return 250;
     case 5:
-      return 400;
+      return 300;
     case 6:
-      return 500;
+      return 350;
     case 7:
-      return 600;
+      return 400;
     case 8:
-      return 800;
+      return 450;
     case 9:
+      return 500;
+    case 10:
+      return 550;
+    case 11:
+      return 600;
+    case 12:
+      return 650;
+    case 13:
+      return 700;
+    case 14:
+      return 750;
+    case 15:
+      return 800;
+    case 16:
+      return 850;
+    case 17:
+      return 900;
+    case 18:
+      return 950;
+    case 19:
       return 1000;
+    case 20:
+      return 1500;
     default:
       return 50;
   }

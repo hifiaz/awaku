@@ -1,10 +1,8 @@
+import 'dart:io';
+
 import 'package:awaku/service/provider/authentication_provider.dart';
-import 'package:awaku/service/provider/states/login_states.dart';
-import 'package:awaku/src/auth/signup_view.dart';
-import 'package:awaku/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:logger/logger.dart';
 
 class LoginView extends ConsumerStatefulWidget {
   const LoginView({super.key});
@@ -14,96 +12,239 @@ class LoginView extends ConsumerStatefulWidget {
 }
 
 class _LoginViewState extends ConsumerState<LoginView> {
-  final TextEditingController email = TextEditingController();
-  final TextEditingController password = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    ref.listen(authenticationProvider, (previous, next) {
-      Logger().d('message $next');
-      if (next is LoginStateError) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(next.error),
-          behavior: SnackBarBehavior.floating,
-        ));
-      }
-    });
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    
     return Scaffold(
+      backgroundColor: colorScheme.background,
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 30),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'Login',
-                      style: Theme.of(context).textTheme.displaySmall,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 32.0),
+          child: Column(
+            children: [
+              const Spacer(flex: 2),
+              
+              // App Logo and Title Section
+              Column(
+                children: [
+                  Container(
+                    width: 120,
+                    height: 120,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: colorScheme.primary.withOpacity(0.1),
+                      border: Border.all(
+                        color: colorScheme.primary.withOpacity(0.2),
+                        width: 2,
+                      ),
+                    ),
+                    child: ClipOval(
+                      child: Image.asset(
+                        'assets/images/icon.jpg',
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Icon(
+                            Icons.health_and_safety_rounded,
+                            size: 60,
+                            color: colorScheme.primary,
+                          );
+                        },
+                      ),
                     ),
                   ),
-                ),
-                const CircleAvatar(
-                  radius: 50,
-                  backgroundImage: AssetImage('assets/images/logo.png'),
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  'Awaku: Record Your Health Body',
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-
-                TextField(
-                  controller: email,
-                  decoration: const InputDecoration(hintText: 'Email'),
-                ),
-                const SizedBox(height: 30),
-                TextField(
-                  controller: password,
-                  obscureText: true,
-                  decoration: const InputDecoration(hintText: 'Password'),
-                ),
-                const SizedBox(height: 40),
-                Center(
-                  child: CustomButton(
-                    width: double.infinity,
-                    isDisabled: false,
-                    title: 'Sign in',
-                    onPressed: () => ref
-                        .read(authenticationProvider.notifier)
-                        .login(email.text, password.text),
+                  const SizedBox(height: 32),
+                  Text(
+                    'Welcome to Awaku',
+                    style: theme.textTheme.displaySmall?.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: colorScheme.onBackground,
+                      letterSpacing: -0.5,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
-                ),
-                const SizedBox(height: 20),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text('Don\'t have account? '),
-                    TextButton(
-                      onPressed: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const SignupView(),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Your personal health companion for tracking wellness, fitness, and mindful living',
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      color: colorScheme.onBackground.withOpacity(0.7),
+                      height: 1.5,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+              
+              const Spacer(flex: 3),
+              
+              // Sign-in buttons section
+              Column(
+                children: [
+                  // Google Sign-In Button
+                  Container(
+                    width: double.infinity,
+                    height: 56,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: colorScheme.outline.withOpacity(0.3),
+                        width: 1.5,
+                      ),
+                      color: colorScheme.surface,
+                    ),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(16),
+                        onTap: () async {
+                          try {
+                            await ref.read(googleSignInProvider.future);
+                          } catch (e) {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(e.toString()),
+                                  behavior: SnackBarBehavior.floating,
+                                  backgroundColor: colorScheme.error,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
+                              );
+                            }
+                          }
+                        },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.asset(
+                              'assets/images/google_logo.png',
+                              height: 24,
+                              width: 24,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Container(
+                                  width: 24,
+                                  height: 24,
+                                  decoration: BoxDecoration(
+                                    color: colorScheme.primary,
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  child: const Icon(
+                                    Icons.g_mobiledata,
+                                    color: Colors.white,
+                                    size: 20,
+                                  ),
+                                );
+                              },
+                            ),
+                            const SizedBox(width: 12),
+                            Text(
+                              'Continue with Google',
+                              style: theme.textTheme.labelLarge?.copyWith(
+                                fontWeight: FontWeight.w600,
+                                color: colorScheme.onSurface,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      child: const Text('Signup'),
                     ),
-                  ],
+                  ),
+                  
+                  const SizedBox(height: 16),
+                  
+                  // Apple Sign-In Button (only on iOS)
+                  if (Platform.isIOS)
+                    Container(
+                      width: double.infinity,
+                      height: 56,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                        color: Colors.black,
+                      ),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(16),
+                          onTap: () async {
+                            try {
+                              await ref.read(appleSignInProvider.future);
+                            } catch (e) {
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(e.toString()),
+                                    behavior: SnackBarBehavior.floating,
+                                    backgroundColor: colorScheme.error,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                  ),
+                                );
+                              }
+                            }
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(
+                                Icons.apple,
+                                color: Colors.white,
+                                size: 24,
+                              ),
+                              const SizedBox(width: 12),
+                              Text(
+                                'Continue with Apple',
+                                style: theme.textTheme.labelLarge?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+              
+              const SizedBox(height: 40),
+              
+              // Terms and Privacy
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: RichText(
+                  textAlign: TextAlign.center,
+                  text: TextSpan(
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: colorScheme.onBackground.withOpacity(0.6),
+                      height: 1.4,
+                    ),
+                    children: [
+                      const TextSpan(text: 'By continuing, you agree to our '),
+                      TextSpan(
+                        text: 'Terms of Service',
+                        style: TextStyle(
+                          color: colorScheme.primary,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const TextSpan(text: ' and '),
+                      TextSpan(
+                        text: 'Privacy Policy',
+                        style: TextStyle(
+                          color: colorScheme.primary,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 40),
-                // Center(
-                //   child: SignInButton(
-                //     Buttons.GoogleDark,
-                //     onPressed: () => ref
-                //         .read(authNotifierProvider.notifier)
-                //         .continueWithGoogle(),
-                //   ),
-                // ),
-              ],
-            ),
+              ),
+              
+              const Spacer(flex: 1),
+            ],
           ),
         ),
       ),

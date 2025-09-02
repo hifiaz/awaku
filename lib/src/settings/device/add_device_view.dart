@@ -59,7 +59,7 @@ class _AddDeviceViewState extends ConsumerState<AddDeviceView> {
               initialData: const [],
               builder: (c, snapshot) => ScanResults(
                 data: (snapshot.data ?? [])
-                    .where((element) => element.device.localName.isNotEmpty)
+                    .where((element) => element.device.platformName.isNotEmpty)
                     .toList(),
               ),
             ),

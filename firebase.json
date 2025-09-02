@@ -1,0 +1,40 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "awaku-3794c",
+          "appId": "1:782366684829:android:e85a854696df906ec58674",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "ios": {
+        "default": {
+          "projectId": "awaku-3794c",
+          "appId": "1:782366684829:ios:2220a0228a64f282c58674",
+          "uploadDebugSymbols": false,
+          "fileOutput": "ios/Runner/GoogleService-Info.plist"
+        }
+      },
+      "macos": {
+        "default": {
+          "projectId": "awaku-3794c",
+          "appId": "1:782366684829:ios:6c8a708dff48c68fc58674",
+          "uploadDebugSymbols": false,
+          "fileOutput": "macos/Runner/GoogleService-Info.plist"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "awaku-3794c",
+          "configurations": {
+            "ios": "1:782366684829:ios:2220a0228a64f282c58674"
+          }
+        }
+      }
+    }
+  },
+  "firestore": {
+    "indexes": "firestore.indexes.json"
+  }
+}
